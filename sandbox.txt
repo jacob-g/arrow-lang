@@ -1,0 +1,2 @@
+main
+bool x = 1

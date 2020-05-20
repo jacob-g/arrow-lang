@@ -3,6 +3,9 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import arrow.ArrowLexer;
+import arrow.ArrowTokenType;
+import arrow.parser.ArrowProgramParser;
+import lexer.TokenLexResult;
 
 public class Runner {
 	public static void main(String[] args) {
@@ -26,6 +29,11 @@ public class Runner {
 			return;
 		}
 		
-		System.out.println(ArrowLexer.parse(fileBuilder.toString()));
+		TokenLexResult<ArrowTokenType> lexResult = ArrowLexer.parse(fileBuilder.toString());
+		System.out.println(lexResult);
+		
+		if (lexResult.getSuccess()) {
+			System.out.println(new ArrowProgramParser().parse(lexResult.getResults()));
+		}
 	}
 }

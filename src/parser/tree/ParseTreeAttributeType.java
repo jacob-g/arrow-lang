@@ -4,5 +4,6 @@ public enum ParseTreeAttributeType {
 	IDENTIFIER,
 	TYPE,
 	VALUE,
-	TEST
+	TEST,
+	ARGUMENTS
 }

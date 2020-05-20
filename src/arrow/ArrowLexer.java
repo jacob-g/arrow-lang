@@ -47,6 +47,13 @@ public class ArrowLexer {
 	public static TokenLexResult<ArrowTokenType> parse(String program) {
 		TokenLexResult<ArrowTokenType> result = programSpec.parse(program);
 		
-		return result.getSuccess() && result.getRemainder().isEmpty() ? result : TokenLexResult.failure(result.getRemainder());
+		return result.getSuccess() && result.getRemainder().isEmpty() 
+				? TokenLexResult.of(
+						result.getResults()
+							.stream()
+							.filter(token -> token.getType().CATEGORY != ArrowTokenCategory.IGNORE)
+							.collect(Collectors.toList()), 
+						"") //if the parse succeeded, remove all the ignored characters
+				: TokenLexResult.failure(result.getRemainder());
 	}
 }

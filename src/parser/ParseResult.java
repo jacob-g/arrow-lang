@@ -69,4 +69,8 @@ public class ParseResult<T> {
 		
 		return node.get();
 	}
+	
+	public String toString() {
+		return getSuccess() ? "Successful parse, root node type: " + node.get().getType() : "Parse failed, reason: " + getFailureMessage();
+	}
 }
