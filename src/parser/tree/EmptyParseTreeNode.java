@@ -3,6 +3,8 @@ package parser.tree;
 import java.util.ArrayList;
 import java.util.List;
 
+import arrow.symboltable.SymbolTableEntry;
+
 public class EmptyParseTreeNode extends AbstractParseTreeNode {
 	@Override
 	public List<ParseTreeNode> getChildren() {
@@ -15,7 +17,7 @@ public class EmptyParseTreeNode extends AbstractParseTreeNode {
 	}
 
 	@Override
-	public String getIdentifier() {
+	public SymbolTableEntry getIdentifier() {
 		assert false;
 		return null;
 	}

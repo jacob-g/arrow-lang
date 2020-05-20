@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import arrow.symboltable.SymbolTableEntry;
+
 public class DeclarationParseTreeNode extends AbstractParseTreeNode {
 
 	private DeclarationParseTreeNode(ParseTreeNode identifier) {
@@ -29,7 +31,7 @@ public class DeclarationParseTreeNode extends AbstractParseTreeNode {
 	}
 
 	@Override
-	public String getIdentifier() {
+	public SymbolTableEntry getIdentifier() {
 		assert false;
 		return null;
 	}

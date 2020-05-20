@@ -3,10 +3,13 @@ package arrow.parser;
 import java.util.List;
 
 import arrow.ArrowTokenType;
+import arrow.symboltable.SymbolTableEntry;
 import arrow.symboltable.SymbolTableEntryType;
 import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
 import parser.ParseResult;
+import parser.tree.AssignmentParseTreeNode;
+import parser.tree.DeclarationParseTreeNode;
 import parser.tree.VariableParseTreeNode;
 
 public class AssignmentDeclarationParser extends AbstractArrowParser {
@@ -42,16 +45,6 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 		}
 	}
 	
-	private ParseResult<ArrowTokenType> parseIdentifier(List<Token<ArrowTokenType>> tokens) {
-		final String identifier = tokens.get(0).getContent();
-		ParseResult<ArrowTokenType> identifierParseResult = requireType(tokens, ArrowTokenType.IDENTIFIER, 1);
-		if (!identifierParseResult.getSuccess()) {
-			return identifierParseResult;
-		}
-		
-		return ParseResult.of(VariableParseTreeNode.of(identifier), identifierParseResult.getRemainder());
-	}
-	
 	private ParseResult<ArrowTokenType> parseDeclaration(List<Token<ArrowTokenType>> tokens) {
 		assert !tokens.isEmpty() && representsType(tokens.get(0));
 				
@@ -59,30 +52,19 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 			return ParseResult.failure("Improperly formatted declaration", tokens);
 		}
 		
-		ParseResult<ArrowTokenType> identifierParseResult = parseIdentifier(tokens.subList(1, tokens.size()));
-		if (!identifierParseResult.getSuccess()) {
-			return identifierParseResult;
+		if (tokens.get(1).getType() != ArrowTokenType.IDENTIFIER) {
+			return ParseResult.failure("Missing variable name in declaration", tokens);
 		}
 		
 		final String identifier = tokens.get(1).getContent();
 		
-		//if this is followed by an equal sign, give a value
-		if (tokens.size() >= 4 && tokens.get(2).getType() == ArrowTokenType.SINGLE_EQUAL) {
-			ParseResult<ArrowTokenType> assignmentParseResult = parseAssignment(tokens.subList(1, tokens.size()));
-			
-			if (!assignmentParseResult.getSuccess()) {
-				return assignmentParseResult;
-			}
-		}
-		
-		//TODO: insert into the symbol table
 		if (symbolTable.contains(identifier)) {
 			return ParseResult.failure("Redefining previously defined identifier", tokens);
 		}
 		
-		symbolTable.add(identifier, SymbolTableEntryType.VARIABLE);
+		VariableParseTreeNode varNode = VariableParseTreeNode.of(symbolTable.add(identifier, SymbolTableEntryType.VARIABLE));
 		
-		return null;
+		return ParseResult.of(DeclarationParseTreeNode.of(varNode), tokens.subList(2, tokens.size()));
 	}
 
 	private ParseResult<ArrowTokenType> parseAssignment(List<Token<ArrowTokenType>> tokens) {
@@ -92,12 +74,21 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 			return ParseResult.failure("Improperly formatted assignment", tokens);
 		}
 		
-		ParseResult<ArrowTokenType> identifierParseResult = parseIdentifier(tokens);
-		if (!identifierParseResult.getSuccess()) {
-			return identifierParseResult;
+		if (tokens.get(0).getType() != ArrowTokenType.IDENTIFIER) {
+			return ParseResult.failure("Missing variable name in assignment", tokens);
+		}
+		
+		final String identifier = tokens.get(0).getContent();
+		if (!symbolTable.contains(identifier)) {
+			return ParseResult.failure("Assignment undeclared variable: " + identifier, tokens);
+		}
+		
+		SymbolTableEntry varEntry = symbolTable.lookup(identifier);
+		if (varEntry.getType() != SymbolTableEntryType.VARIABLE) {
+			return ParseResult.failure("Incorrect symbol type in assignment: " + varEntry.getType() + " for " + identifier, tokens);
 		}
 				
-		ParseResult<ArrowTokenType> equalParseResult = requireType(identifierParseResult.getRemainder(), ArrowTokenType.SINGLE_EQUAL, 1);
+		ParseResult<ArrowTokenType> equalParseResult = requireType(tokens.subList(1, tokens.size()), ArrowTokenType.SINGLE_EQUAL, 1);
 		if (!equalParseResult.getSuccess()){
 			return equalParseResult;
 		}
@@ -107,8 +98,9 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 			return valueResult;
 		}
 		
-		//TODO: put together the assignment node with what we got out of this
+		VariableParseTreeNode varNode = VariableParseTreeNode.of(varEntry);
+		AssignmentParseTreeNode assignNode = AssignmentParseTreeNode.of(varNode);
 		
-		return null;
+		return ParseResult.of(assignNode, valueResult.getRemainder());
 	}
 }

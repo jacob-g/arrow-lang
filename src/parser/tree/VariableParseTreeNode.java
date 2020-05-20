@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import arrow.symboltable.SymbolTableEntry;
+
 public class VariableParseTreeNode extends AbstractParseTreeNode {
-	private final String identifier;
+	private final SymbolTableEntry identifier;
 	
-	private VariableParseTreeNode(String identifier) {
+	private VariableParseTreeNode(SymbolTableEntry identifier) {
 		assert identifier != null;
 		
 		this.identifier = identifier;
 	}
 	
-	public static VariableParseTreeNode of(String identifier) {
+	public static VariableParseTreeNode of(SymbolTableEntry identifier) {
 		Objects.requireNonNull(identifier);
 		
 		return new VariableParseTreeNode(identifier);
@@ -30,7 +32,7 @@ public class VariableParseTreeNode extends AbstractParseTreeNode {
 	}
 
 	@Override
-	public String getIdentifier() {
+	public SymbolTableEntry getIdentifier() {
 		return identifier;
 	}
 }

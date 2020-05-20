@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import arrow.symboltable.SymbolTableEntry;
+
 public class CompoundParseTreeNode extends AbstractParseTreeNode {
 
 	private final List<ParseTreeNode> children;
@@ -30,7 +32,7 @@ public class CompoundParseTreeNode extends AbstractParseTreeNode {
 	}
 
 	@Override
-	public String getIdentifier() {
+	public SymbolTableEntry getIdentifier() {
 		assert false;
 		return null;
 	}

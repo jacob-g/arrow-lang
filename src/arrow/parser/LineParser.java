@@ -58,7 +58,7 @@ public class LineParser extends AbstractArrowParser {
 		default:
 			assert false : "keyword type not covered";
 			lineParseResult = null;
-			break;	
+			break;
 		}
 		
 		if (!lineParseResult.getSuccess()) {
@@ -68,7 +68,7 @@ public class LineParser extends AbstractArrowParser {
 		assert lineParseResult.getSuccess();
 		
 		//make sure that the line ends with a newline
-		ParseResult<ArrowTokenType> endOfLineResult = requireType(remainder, ArrowTokenType.NEWLINE, 1);
+		ParseResult<ArrowTokenType> endOfLineResult = requireType(lineParseResult.getRemainder(), ArrowTokenType.NEWLINE, 1);
 		
 		return endOfLineResult.getSuccess() ? ParseResult.of(lineParseResult.getNode(), endOfLineResult.getRemainder()) : endOfLineResult;
 	}

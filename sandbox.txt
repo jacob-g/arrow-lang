@@ -1,2 +1,4 @@
 main
-x = 1
+bool x
+bool y
+x = y
