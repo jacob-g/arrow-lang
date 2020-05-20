@@ -37,7 +37,9 @@ public class ArrowLexer {
 			FixedStringTokenSpec.of("-"),
 			FixedStringTokenSpec.of("*"),
 			FixedStringTokenSpec.of("/"),
-			FixedStringTokenSpec.of("-->")),
+			FixedStringTokenSpec.of("-->"),
+			FixedStringTokenSpec.of("<"),
+			FixedStringTokenSpec.of(">")),
 		ArrowTokenType.SYMBOL);
 	
 	private static final TokenSpec<ArrowTokenType> identifierSpec = TyperSpec.of(
