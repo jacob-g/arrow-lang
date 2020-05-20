@@ -1,21 +1,24 @@
 package arrow.parser;
 
 import java.util.List;
+import java.util.Objects;
 
 import arrow.ArrowTokenType;
+import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
 import parser.ParseResult;
 import parser.tree.EmptyParseTreeNode;
 
 public class LineParser extends AbstractArrowParser {
-	private LineParser(int indentation) {
-		super(indentation);
+	private LineParser(int indentation, SymbolTableStack symbolTable) {
+		super(indentation, symbolTable);
 	}
 	
-	public static LineParser of(int indentation) {
+	public static LineParser of(int indentation, SymbolTableStack symbolTable) {
 		requireNonNegative(indentation);
+		Objects.requireNonNull(symbolTable);
 		
-		return new LineParser(indentation);
+		return new LineParser(indentation, symbolTable);
 	}
 
 	@Override
@@ -33,7 +36,7 @@ public class LineParser extends AbstractArrowParser {
 		ParseResult<ArrowTokenType> lineParseResult;
 		switch (tokens.get(0).getType().CATEGORY) {
 		case IDENTIFIER:
-			lineParseResult = new AssignmentDeclarationParser(indentation).parse(tokens);
+			lineParseResult = new AssignmentDeclarationParser(indentation, symbolTable).parse(tokens);
 			break;
 		case KEYWORD:
 			lineParseResult = parseKeyword(tokens);

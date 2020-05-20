@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ArrowSymbolTableStack {
+public class SymbolTableStack {
 	private final ChainedStackEntry root;
 	private ChainedStackEntry top;
 	private final Map<SymbolTable, ChainedStackEntry> stackEntries = new HashMap<>();
@@ -40,9 +40,23 @@ public class ArrowSymbolTableStack {
 		}
 	}
 	
-	private ArrowSymbolTableStack() {
+	private SymbolTableStack() {
 		this.root = new ChainedStackEntry(new SymbolTable());
 		this.top = root;
+		
+		stackEntries.put(root.table, root);
+	}
+	
+	public static SymbolTableStack build() {
+		return new SymbolTableStack();
+	}
+	
+	public SymbolTable getRoot() {
+		return root.table;
+	}
+	
+	public SymbolTableEntry add(String name, SymbolTableEntryType type) {
+		return top.table.add(name, type);
 	}
 	
 	public SymbolTable push(SymbolTable predecessor) {
@@ -82,7 +96,7 @@ public class ArrowSymbolTableStack {
 		return false;
 	}
 	
-	public ArrowSymbolTableEntry lookup(String name) {
+	public SymbolTableEntry lookup(String name) {
 		if (!contains(name)) {
 			throw new IllegalStateException("Looking up non-existent entry");
 		}

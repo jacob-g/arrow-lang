@@ -1,10 +1,10 @@
 package arrow.symboltable;
 
-public class ArrowSymbolTableEntry {
+public class SymbolTableEntry {
 	private final String identifier;
 	private final SymbolTableEntryType type;
 
-	ArrowSymbolTableEntry(String identifier, SymbolTableEntryType type) {
+	SymbolTableEntry(String identifier, SymbolTableEntryType type) {
 		assert identifier != null;
 		assert type != null;
 		

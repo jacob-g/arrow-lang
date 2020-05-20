@@ -3,27 +3,28 @@ package arrow.parser;
 import java.util.List;
 
 import arrow.ArrowTokenType;
+import arrow.symboltable.SymbolTableEntryType;
+import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
 import parser.ParseResult;
 import parser.tree.VariableParseTreeNode;
 
 public class AssignmentDeclarationParser extends AbstractArrowParser {
 
-	protected AssignmentDeclarationParser(int indentation) {
-		super(indentation);
+	protected AssignmentDeclarationParser(int indentation, SymbolTableStack symbolTable) {
+		super(indentation, symbolTable);
 	}
 	
-	//TODO: link these with the symbol table
 	private boolean representsType(Token<ArrowTokenType> token) {
 		assert token.getType() == ArrowTokenType.IDENTIFIER;
 		
-		return token.getContent().equals("bool");
+		return symbolTable.contains(token.getContent()) && symbolTable.lookup(token.getContent()).getType() == SymbolTableEntryType.TYPE;
 	}
 	
 	private boolean representsVariable(Token<ArrowTokenType> token) {
 		assert token.getType() == ArrowTokenType.IDENTIFIER;
 		
-		return true;
+		return symbolTable.contains(token.getContent()) && symbolTable.lookup(token.getContent()).getType() == SymbolTableEntryType.VARIABLE;
 	}
 
 	@Override
@@ -37,11 +38,10 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 		} else if (representsVariable(tokens.get(0))) {
 			return parseAssignment(tokens);
 		} else {
-			return ParseResult.failure("Unexpected symbol for assignment", tokens);
+			return ParseResult.failure("Undeclared symbol for assignment", tokens);
 		}
 	}
 	
-	//TODO: make this look in the symbol table
 	private ParseResult<ArrowTokenType> parseIdentifier(List<Token<ArrowTokenType>> tokens) {
 		final String identifier = tokens.get(0).getContent();
 		ParseResult<ArrowTokenType> identifierParseResult = requireType(tokens, ArrowTokenType.IDENTIFIER, 1);
@@ -64,6 +64,8 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 			return identifierParseResult;
 		}
 		
+		final String identifier = tokens.get(1).getContent();
+		
 		//if this is followed by an equal sign, give a value
 		if (tokens.size() >= 4 && tokens.get(2).getType() == ArrowTokenType.SINGLE_EQUAL) {
 			ParseResult<ArrowTokenType> assignmentParseResult = parseAssignment(tokens.subList(1, tokens.size()));
@@ -74,6 +76,11 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 		}
 		
 		//TODO: insert into the symbol table
+		if (symbolTable.contains(identifier)) {
+			return ParseResult.failure("Redefining previously defined identifier", tokens);
+		}
+		
+		symbolTable.add(identifier, SymbolTableEntryType.VARIABLE);
 		
 		return null;
 	}
@@ -95,7 +102,7 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 			return equalParseResult;
 		}
 		
-		ParseResult<ArrowTokenType> valueResult = ExpressionParser.of(indentation).parse(equalParseResult.getRemainder());
+		ParseResult<ArrowTokenType> valueResult = ExpressionParser.of(indentation, symbolTable).parse(equalParseResult.getRemainder());
 		if (!valueResult.getSuccess()) {
 			return valueResult;
 		}
