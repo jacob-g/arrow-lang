@@ -51,6 +51,6 @@ public final class RepeatedTokenSpec<T> implements TokenSpec<T> {
 			}
 		} while (!remainder.isEmpty() && moreToParse);
 		
-		return anyOccurrences || !mustBePresentOnce ? TokenLexResult.of(outTokens, remainder) : TokenLexResult.failure();
+		return anyOccurrences || !mustBePresentOnce ? TokenLexResult.of(outTokens, remainder) : TokenLexResult.failure(text);
 	}
 }

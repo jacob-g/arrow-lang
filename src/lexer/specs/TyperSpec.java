@@ -35,7 +35,7 @@ public class TyperSpec<T> implements TokenSpec<T> {
 					.map(token -> TypedToken.of(token, label))
 					.collect(Collectors.toList()),
 				result.getRemainder()) 
-				: TokenLexResult.failure();
+				: result;
 	}
 	
 	

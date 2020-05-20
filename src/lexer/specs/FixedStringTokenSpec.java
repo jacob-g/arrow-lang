@@ -26,6 +26,6 @@ public final class FixedStringTokenSpec<T> implements TokenSpec<T> {
 		
 		assert value != null;
 		
-		return text.startsWith(value) ? TokenLexResult.of(Arrays.asList(StringToken.of(value)), text.substring(value.length())) : TokenLexResult.failure();
+		return text.startsWith(value) ? TokenLexResult.of(Arrays.asList(StringToken.of(value)), text.substring(value.length())) : TokenLexResult.failure(text);
 	}
 }

@@ -40,6 +40,6 @@ public final class CombinerSpec<T> implements TokenSpec<T> {
 						)
 					),
 					result.getRemainder())
-				: TokenLexResult.failure();
+				: TokenLexResult.failure(text);
 	}
 }

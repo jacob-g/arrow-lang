@@ -46,7 +46,7 @@ public final class SequenceTokenSpec<T> implements TokenSpec<T> {
 				outResults.addAll(result.getResults());
 				remainder = result.getRemainder();
 			} else {
-				return TokenLexResult.failure();
+				return TokenLexResult.failure(remainder);
 			}
 		}
 		

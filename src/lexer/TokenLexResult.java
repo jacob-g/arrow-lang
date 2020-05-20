@@ -12,6 +12,7 @@ public final class TokenLexResult<T> {
 	
 	private TokenLexResult(Optional<List<Token<T>>> results, String remainder) {
 		assert results != null;
+		assert remainder != null;
 		
 		this.results = results;
 		this.remainder = remainder;
@@ -23,8 +24,10 @@ public final class TokenLexResult<T> {
 		return new TokenLexResult<T>(Optional.of(results), remainder);
 	}
 	
-	public static <T, L> TokenLexResult<T> failure() {
-		return new TokenLexResult<T>(Optional.empty(), null);
+	public static <T, L> TokenLexResult<T> failure(String remainder) {
+		Objects.requireNonNull(remainder);
+		
+		return new TokenLexResult<T>(Optional.empty(), remainder);
 	}
 	
 	public boolean getSuccess() {
@@ -45,15 +48,15 @@ public final class TokenLexResult<T> {
 		return Collections.unmodifiableList(results.get());
 	}
 	
-	public String getRemainder() {
-		requireSuccess();
-		
+	public String getRemainder() {		
 		assert remainder != null;
 		
 		return remainder;
 	}
 	
 	public String toString() {
-		return getSuccess() ? results.get().stream().map(token -> token.toString()).collect(Collectors.joining(",", "[", "]")) + "\n" + "Remainder: " + getRemainder() : "<<<LEXER FAILURE>>>";
+		return getSuccess() 
+				? results.get().stream().map(token -> token.toString()).collect(Collectors.joining(",", "[", "]")) + "\n" + "Remainder: " + getRemainder() 
+				: "<<<LEXER FAILURE>>>\nPoint: " + remainder.substring(0, Math.min(20, remainder.length()));
 	}
 }

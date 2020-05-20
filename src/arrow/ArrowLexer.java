@@ -56,6 +56,6 @@ public class ArrowLexer {
 	public static TokenLexResult<ArrowTokenType> parse(String program) {
 		TokenLexResult<ArrowTokenType> result = programSpec.parse(program);
 		
-		return result.getSuccess() && result.getRemainder().isEmpty() ? result : TokenLexResult.failure();
+		return result.getSuccess() && result.getRemainder().isEmpty() ? result : TokenLexResult.failure(result.getRemainder());
 	}
 }

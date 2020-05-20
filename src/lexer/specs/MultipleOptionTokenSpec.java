@@ -40,6 +40,6 @@ public final class MultipleOptionTokenSpec<T> implements TokenSpec<T> {
 			}
 		}
 		
-		return TokenLexResult.failure();
+		return TokenLexResult.failure(text);
 	}
 }
