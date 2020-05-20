@@ -1,4 +1,37 @@
-int x = 5
-|-->
-| x = x - 1
-|-- if x > 0
+function isEqualZero(int x) bool
+| bool return
+|
+| /--< x == 0
+| | return = false
+| \-->
+|
+| /--< x != 0
+| | return = true
+| \-->
+|
+^ return
+
+function incrementXTimes(int x) void
+| int counter = 0
+| /--< x < 0
+| | /-->
+| | | loop body
+| | | counter = counter + 1
+| | \--<
+| \-->
+^
+
+function power(int base, int exponent) int
+| require base >= 0 && exponent >= 0
+| int counter = 0
+| int workingPower = 1
+| /--< exponent == 0
+| | /-->
+| | | workingPower = workingPower * exponent
+| | | counter = counter + 1
+| | \--< counter < exponent
+| \-->
+|
+^ workingPower
+
+main

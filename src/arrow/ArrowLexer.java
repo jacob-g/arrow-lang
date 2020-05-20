@@ -1,5 +1,7 @@
 package arrow;
 
+import java.util.stream.Collectors;
+
 import lexer.TokenLexResult;
 import lexer.specs.CombinerSpec;
 import lexer.specs.FixedStringTokenSpec;
@@ -10,37 +12,26 @@ import lexer.specs.TokenSpec;
 import lexer.specs.TyperSpec;
 
 public class ArrowLexer {
+	private static final TokenSpec<ArrowTokenType> specFromCategory(ArrowTokenCategory category) {
+		return MultipleOptionTokenSpec.of(
+			ArrowTokenType.tokensByCategory(category)
+				.stream()
+				.map(tokenType -> TyperSpec.of(FixedStringTokenSpec.<ArrowTokenType>of(tokenType.TEXT), tokenType))
+				.collect(Collectors.toList())
+				);
+	}
+	
 	private static final TokenSpec<ArrowTokenType> whiteSpaceSpec = TyperSpec.of(
 			CombinerSpec.of(RepeatedTokenSpec.of(MultipleOptionTokenSpec.of(
 					FixedStringTokenSpec.of(" "), 
 					FixedStringTokenSpec.of("\t")), false)),
-			ArrowTokenType.IGNORE);
+			ArrowTokenType.WHITESPACE);
 	
 	private static final TokenSpec<ArrowTokenType> newLineSpec = TyperSpec.of(FixedStringTokenSpec.of("\n"), ArrowTokenType.NEWLINE);
 	
-	private static final TokenSpec<ArrowTokenType> keywordSpec = TyperSpec.of(
-		MultipleOptionTokenSpec.of(
-			FixedStringTokenSpec.of("if"), 
-			FixedStringTokenSpec.of("not")),
-		ArrowTokenType.KEYWORD);
+	private static final TokenSpec<ArrowTokenType> keywordSpec = specFromCategory(ArrowTokenCategory.KEYWORD);
 	
-	private static final TokenSpec<ArrowTokenType> symbolSpec = TyperSpec.of(
-		MultipleOptionTokenSpec.of(
-			FixedStringTokenSpec.of("|-->"),
-			FixedStringTokenSpec.of("|--"),
-			FixedStringTokenSpec.of("|"),
-			FixedStringTokenSpec.of("("),
-			FixedStringTokenSpec.of(")"),
-			FixedStringTokenSpec.of("=="),
-			FixedStringTokenSpec.of("="),
-			FixedStringTokenSpec.of("+"),
-			FixedStringTokenSpec.of("-"),
-			FixedStringTokenSpec.of("*"),
-			FixedStringTokenSpec.of("/"),
-			FixedStringTokenSpec.of("-->"),
-			FixedStringTokenSpec.of("<"),
-			FixedStringTokenSpec.of(">")),
-		ArrowTokenType.SYMBOL);
+	private static final TokenSpec<ArrowTokenType> symbolSpec = specFromCategory(ArrowTokenCategory.SYMBOL);
 	
 	private static final TokenSpec<ArrowTokenType> identifierSpec = TyperSpec.of(
 			CombinerSpec.of(SequenceTokenSpec.of(TokenSpec.getLetterSpec(), RepeatedTokenSpec.of(TokenSpec.getAlnumSpec(), false))),
