@@ -9,7 +9,7 @@ import lexer.Token;
 import parser.ParseResult;
 import parser.tree.EmptyParseTreeNode;
 
-public class LineParser extends AbstractArrowParser {
+final class LineParser extends AbstractArrowParser {
 	private LineParser(int indentation, SymbolTableStack symbolTable) {
 		super(indentation, symbolTable);
 	}
@@ -71,6 +71,8 @@ public class LineParser extends AbstractArrowParser {
 		switch (tokens.get(0).getType()) {
 		case START_IF:
 			return IfParser.of(indentation, symbolTable).parse(tokens);
+		case BEGIN_DO_WHILE:
+			return LoopParser.of(indentation, symbolTable).parse(tokens);
 		default:
 			return ParseResult.failure("Unexpected token to start line: " + tokens.get(0).getType(), tokens);
 		}

@@ -12,6 +12,7 @@ public enum ParseTreeNodeType {
 	DECLARATION(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TYPE, ParseTreeAttributeType.IDENTIFIER))),
 	ASSIGNMENT(new HashSet<>(Arrays.asList(ParseTreeAttributeType.IDENTIFIER, ParseTreeAttributeType.VALUE))),
 	IF(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TEST))),
+	LOOP(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TEST))),
 	WHILE(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TEST))),
 	FUNCTION(new HashSet<>(Arrays.asList(ParseTreeAttributeType.ARGUMENTS, ParseTreeAttributeType.IDENTIFIER, ParseTreeAttributeType.TYPE))),
 	DATA(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TYPE))),

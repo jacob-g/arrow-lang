@@ -12,33 +12,25 @@ import parser.tree.ControlParseTreeNode;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
 
-final class IfParser extends AbstractArrowParser {
+final class LoopParser extends AbstractArrowParser {
 
-	private IfParser(int indentation, SymbolTableStack symbolTable) {
+	private LoopParser(int indentation, SymbolTableStack symbolTable) {
 		super(indentation, symbolTable);
 	}
 	
-	public static IfParser of(int indentation, SymbolTableStack symbolTable) {
+	public static LoopParser of(int indentation, SymbolTableStack symbolTable) {
 		requireNonNegative(indentation);
 		Objects.requireNonNull(symbolTable);
 		
-		return new IfParser(indentation, symbolTable);
+		return new LoopParser(indentation, symbolTable);
 	}
 
+	//TODO: get rid of repeated code with the loop parser
 	@Override
 	public ParseResult<ArrowTokenType> parse(List<Token<ArrowTokenType>> tokens) {
-		if (tokens.size() < 2) {
-			return ParseResult.failure("No condition supplied to if statement", tokens);
-		}
+		assert tokens.size() > 1;
 		
-		ParseResult<ArrowTokenType> conditionResult = ExpressionParser.of(indentation, symbolTable).parse(tokens.subList(1, tokens.size()));
-		if (!conditionResult.getSuccess()) {
-			return conditionResult;
-		}
-		
-		ParseTreeNode conditionNode = conditionResult.getNode();
-		
-		List<Token<ArrowTokenType>> remainder = conditionResult.getRemainder();
+		List<Token<ArrowTokenType>> remainder = tokens.subList(1, tokens.size());
 		
 		//consume the newline
 		ParseResult<ArrowTokenType> newLineResult = requireType(remainder, ArrowTokenType.NEWLINE, 1);
@@ -76,17 +68,25 @@ final class IfParser extends AbstractArrowParser {
 				remainder = nextResult.getRemainder();
 				break;
 			
-			case END_IF:
+			case END_DO_WHILE:
 				//for an end-if, we're done with the if, so bail out
 				symbolTable.pop();
 				moreBody = false;
 				remainder = remainder.subList(1, remainder.size()); //pop the remainder off the list
 				break;
 			default:
-				return ParseResult.failure("Unexpected token in if body: " + indentationResult.getRemainder().get(0).getType(), indentationResult.getRemainder());
+				return ParseResult.failure("Unexpected token in loop body: " + indentationResult.getRemainder().get(0).getType(), indentationResult.getRemainder());
 			}
 		}
+		
+		ParseResult<ArrowTokenType> conditionResult = ExpressionParser.of(indentation, symbolTable).parse(remainder);
+		if (!conditionResult.getSuccess()) {
+			return conditionResult;
+		}
+		
+		ParseTreeNode conditionNode = conditionResult.getNode();
+		remainder = conditionResult.getRemainder();
 				
-		return ParseResult.of(ControlParseTreeNode.of(ParseTreeNodeType.IF, conditionNode, children), remainder);
+		return ParseResult.of(ControlParseTreeNode.of(ParseTreeNodeType.LOOP, conditionNode, children), remainder);
 	}
 }

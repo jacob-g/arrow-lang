@@ -18,7 +18,7 @@ import parser.tree.DataParseTreeNode;
 import parser.tree.MathOperationTreeNode;
 import parser.tree.VariableParseTreeNode;
 
-public class ExpressionParser extends AbstractArrowParser {
+final class ExpressionParser extends AbstractArrowParser {
 
 	private ExpressionParser(int indentation, SymbolTableStack symbolTable) {
 		super(indentation, symbolTable);

@@ -12,7 +12,7 @@ import parser.tree.AssignmentParseTreeNode;
 import parser.tree.DeclarationParseTreeNode;
 import parser.tree.VariableParseTreeNode;
 
-public class AssignmentDeclarationParser extends AbstractArrowParser {
+final class AssignmentDeclarationParser extends AbstractArrowParser {
 
 	protected AssignmentDeclarationParser(int indentation, SymbolTableStack symbolTable) {
 		super(indentation, symbolTable);

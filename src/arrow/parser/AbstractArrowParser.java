@@ -8,7 +8,7 @@ import lexer.Token;
 import parser.AbstractParser;
 import parser.ParseResult;
 
-public abstract class AbstractArrowParser extends AbstractParser<ArrowTokenType> {
+abstract class AbstractArrowParser extends AbstractParser<ArrowTokenType> {
 	protected final int indentation;
 	protected final SymbolTableStack symbolTable;
 	
