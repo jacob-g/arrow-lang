@@ -99,7 +99,7 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 		}
 		
 		VariableParseTreeNode varNode = VariableParseTreeNode.of(varEntry);
-		AssignmentParseTreeNode assignNode = AssignmentParseTreeNode.of(varNode);
+		AssignmentParseTreeNode assignNode = AssignmentParseTreeNode.of(varNode, valueResult.getNode());
 		
 		return ParseResult.of(assignNode, valueResult.getRemainder());
 	}

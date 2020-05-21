@@ -22,9 +22,7 @@ public class LineParser extends AbstractArrowParser {
 	}
 
 	@Override
-	public ParseResult<ArrowTokenType> parse(List<Token<ArrowTokenType>> tokens) {
-		List<Token<ArrowTokenType>> remainder = tokens;
-		
+	public ParseResult<ArrowTokenType> parse(List<Token<ArrowTokenType>> tokens) {		
 		//first check indentation
 		ParseResult<ArrowTokenType> indentationResult = parseIndentation(tokens);
 		if (!indentationResult.getSuccess()) {
@@ -36,20 +34,20 @@ public class LineParser extends AbstractArrowParser {
 		ParseResult<ArrowTokenType> lineParseResult;
 		switch (tokens.get(0).getType().CATEGORY) {
 		case IDENTIFIER:
-			lineParseResult = new AssignmentDeclarationParser(indentation, symbolTable).parse(tokens);
+			lineParseResult = new AssignmentDeclarationParser(indentation, symbolTable).parse(indentationResult.getRemainder());
 			break;
 		case KEYWORD:
-			lineParseResult = parseKeyword(tokens);
+			lineParseResult = parseKeyword(indentationResult.getRemainder());
 			break;
 		case NUMBER:
-			lineParseResult = ParseResult.failure("Unexpected number at the start of a line", tokens);
+			lineParseResult = ParseResult.failure("Unexpected number at the start of a line", indentationResult.getRemainder());
 			break;
 		case SYMBOL:
-			lineParseResult = ParseResult.failure("Unexpected symbol at the start of a line", tokens);
+			lineParseResult = ParseResult.failure("Unexpected symbol at the start of a line", indentationResult.getRemainder());
 			break;
 		case NEWLINE:
 			//do nothing since we've reached the end of the line
-			lineParseResult = ParseResult.of(new EmptyParseTreeNode(), tokens);
+			lineParseResult = ParseResult.of(new EmptyParseTreeNode(), indentationResult.getRemainder());
 			break;
 		case IGNORE:
 			assert false : "ignored tokens not filtered out";

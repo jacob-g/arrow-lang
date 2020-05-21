@@ -1,13 +1,21 @@
 package arrow.parser;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import arrow.ArrowTokenType;
 import arrow.symboltable.SymbolTableEntry;
 import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
+import memory.MemoryEntry;
 import parser.ParseResult;
+import parser.tree.DataParseTreeNode;
+import parser.tree.MathOperationTreeNode;
 import parser.tree.VariableParseTreeNode;
 
 public class ExpressionParser extends AbstractArrowParser {
@@ -23,24 +31,37 @@ public class ExpressionParser extends AbstractArrowParser {
 		return new ExpressionParser(indentation, symbolTable);
 	}
 
+	private static final Set<ArrowTokenType> ADD_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.PLUS, ArrowTokenType.MINUS));
+	
+	private static final Map<ArrowTokenType, MathOperationTreeNode.Operation> operations = new HashMap<>();
+	static {
+		operations.put(ArrowTokenType.PLUS, MathOperationTreeNode.Operation.ADD);
+		operations.put(ArrowTokenType.MINUS, MathOperationTreeNode.Operation.SUBTRACT);
+		operations.put(ArrowTokenType.TIMES, MathOperationTreeNode.Operation.MULTIPLY);
+		operations.put(ArrowTokenType.DIVIDE, MathOperationTreeNode.Operation.DIVIDE);
+	}
+	
 	@Override
 	public ParseResult<ArrowTokenType> parse(List<Token<ArrowTokenType>> tokens) {
 		if (tokens.size() < 2) {
 			return ParseResult.failure("Unexpected end of data", tokens);
 		}
 		
-		if (tokens.get(0).getType() == ArrowTokenType.MINUS) {
-			//negate
+		ParseResult<ArrowTokenType> overallResult = parseAddend(tokens);
+		if (!overallResult.getSuccess()) {
+			return overallResult;
+		}
+				
+		if (overallResult.getRemainder().size() >= 2 && ADD_OPERATORS.contains(overallResult.getRemainder().get(0).getType())) {
+			ParseResult<ArrowTokenType> secondAddendResult = parseAddend(overallResult.getRemainder().subList(1, overallResult.getRemainder().size()));
+			if (!secondAddendResult.getSuccess()) {
+				return secondAddendResult;
+			}
+			
+			overallResult = ParseResult.of(MathOperationTreeNode.of(overallResult.getNode(), secondAddendResult.getNode()), secondAddendResult.getRemainder());
 		}
 		
-		ParseResult<ArrowTokenType> firstFactorParseResult = parseAddend(tokens);
-		if (!firstFactorParseResult.getSuccess()) {
-			return firstFactorParseResult;
-		}
-		
-		//TODO: see if we have an operator
-		
-		return firstFactorParseResult;
+		return overallResult;
 	}
 	
 	private ParseResult<ArrowTokenType> parseAddend(List<Token<ArrowTokenType>> tokens) {
@@ -55,9 +76,43 @@ public class ExpressionParser extends AbstractArrowParser {
 		switch (tokens.get(0).getType()) {
 		case IDENTIFIER:
 			return parseIdentifier(tokens);
+		case NUMBER:
+			return parseNumber(tokens);
+		case OPEN_PAREN:
+			return parseParenthesized(tokens);
 		default:
-			return ParseResult.failure("Unexpected symbol in expression", tokens);
+			return ParseResult.failure("Unexpected symbol in expression: " + tokens.get(0).getContent(), tokens);
 		}
+	}
+	
+	private ParseResult<ArrowTokenType> parseParenthesized(List<Token<ArrowTokenType>> tokens) {
+		ParseResult<ArrowTokenType> openParenResult = requireType(tokens, ArrowTokenType.OPEN_PAREN, 1);
+		if (!openParenResult.getSuccess()) {
+			return openParenResult;
+		}
+		
+		ParseResult<ArrowTokenType> bodyResult = parse(openParenResult.getRemainder());
+		if (!bodyResult.getSuccess()) {
+			return bodyResult;
+		}
+		
+		ParseResult<ArrowTokenType> closeParenResult = requireType(bodyResult.getRemainder(), ArrowTokenType.CLOSE_PAREN, 1);
+		if (!closeParenResult.getSuccess()) {
+			return closeParenResult;
+		}
+		
+		return ParseResult.of(bodyResult.getNode(), closeParenResult.getRemainder());
+	}
+	
+	private ParseResult<ArrowTokenType> parseNumber(List<Token<ArrowTokenType>> tokens) {
+		ParseResult<ArrowTokenType> tokenResult = requireType(tokens, ArrowTokenType.NUMBER, 1);
+		if (!tokenResult.getSuccess()) {
+			return tokenResult;
+		}
+		
+		assert !tokens.isEmpty();
+		
+		return ParseResult.of(DataParseTreeNode.of(new MemoryEntry(Integer.parseInt(tokens.get(0).getContent()))), tokenResult.getRemainder());
 	}
 	
 	private ParseResult<ArrowTokenType> parseIdentifier(List<Token<ArrowTokenType>> tokens) {

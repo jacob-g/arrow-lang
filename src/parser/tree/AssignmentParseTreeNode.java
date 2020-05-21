@@ -1,28 +1,34 @@
 package parser.tree;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import arrow.symboltable.SymbolTableEntry;
+import memory.MemoryEntry;
 
 public class AssignmentParseTreeNode extends AbstractParseTreeNode {
-	private AssignmentParseTreeNode(VariableParseTreeNode variable) {
+	private final ParseTreeNode value;
+	
+	private AssignmentParseTreeNode(VariableParseTreeNode variable, ParseTreeNode value) {
 		assert variable != null;
+		assert value != null;
 		
 		setAttribute(ParseTreeAttributeType.IDENTIFIER, variable);
+		this.value = value;
 	}
 	
 	//TODO: make this take a value too
-	public static AssignmentParseTreeNode of(VariableParseTreeNode variable) {
+	public static AssignmentParseTreeNode of(VariableParseTreeNode variable, ParseTreeNode value) {
 		Objects.requireNonNull(variable);
+		Objects.requireNonNull(value);
 		
-		return new AssignmentParseTreeNode(variable);
+		return new AssignmentParseTreeNode(variable, value);
 	}
 
 	@Override
 	public List<ParseTreeNode> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
+		return Arrays.asList(value);
 	}
 
 	@Override
@@ -32,7 +38,13 @@ public class AssignmentParseTreeNode extends AbstractParseTreeNode {
 
 	@Override
 	public SymbolTableEntry getIdentifier() {
-		// TODO Auto-generated method stub
+		assert false;
+		return null;
+	}
+
+	@Override
+	public MemoryEntry getData() {
+		assert false;
 		return null;
 	}
 }

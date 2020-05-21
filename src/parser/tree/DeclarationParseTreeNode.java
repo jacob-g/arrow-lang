@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import arrow.symboltable.SymbolTableEntry;
+import memory.MemoryEntry;
 
 public class DeclarationParseTreeNode extends AbstractParseTreeNode {
 
@@ -32,6 +33,12 @@ public class DeclarationParseTreeNode extends AbstractParseTreeNode {
 
 	@Override
 	public SymbolTableEntry getIdentifier() {
+		assert false;
+		return null;
+	}
+
+	@Override
+	public MemoryEntry getData() {
 		assert false;
 		return null;
 	}

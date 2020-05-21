@@ -24,7 +24,8 @@ public class ArrowLexer {
 	private static final TokenSpec<ArrowTokenType> whiteSpaceSpec = TyperSpec.of(
 			CombinerSpec.of(RepeatedTokenSpec.of(MultipleOptionTokenSpec.of(
 					FixedStringTokenSpec.of(" "), 
-					FixedStringTokenSpec.of("\t")), false)),
+					FixedStringTokenSpec.of("\t"),
+					FixedStringTokenSpec.of("\r")), false)),
 			ArrowTokenType.WHITESPACE);
 	
 	private static final TokenSpec<ArrowTokenType> newLineSpec = TyperSpec.of(FixedStringTokenSpec.of("\n"), ArrowTokenType.NEWLINE);

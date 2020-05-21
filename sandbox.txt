@@ -1,4 +1,4 @@
 main
-bool x
-bool y
-x = y
+int x
+int y
+x = 4 + (y + 1)
