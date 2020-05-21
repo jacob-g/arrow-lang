@@ -1,8 +1,11 @@
 package executor;
 
-import memory.MemoryEntry;
-import parser.tree.ParseTreeNode;
+import memory.RuntimeDataStack;
 
 public abstract class AbstractExecutor implements Executor {
+	protected final RuntimeDataStack runtimeData;
 	
+	protected AbstractExecutor(RuntimeDataStack runtimeData) {
+		this.runtimeData = runtimeData;
+	}
 }

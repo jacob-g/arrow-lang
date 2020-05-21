@@ -5,8 +5,10 @@ import java.util.Scanner;
 import arrow.ArrowLexer;
 import arrow.ArrowTokenType;
 import arrow.parser.ArrowProgramParser;
+import arrow.symboltable.SymbolTableStack;
 import executor.CompoundExecutor;
 import lexer.TokenLexResult;
+import memory.RuntimeDataStack;
 import parser.ParseResult;
 
 public class Runner {
@@ -46,6 +48,6 @@ public class Runner {
 		}
 		
 		System.out.println("Executor result:");
-		new CompoundExecutor().execute(parseResult.getNode());
+		CompoundExecutor.of(new RuntimeDataStack()).execute(parseResult.getNode());
 	}
 }

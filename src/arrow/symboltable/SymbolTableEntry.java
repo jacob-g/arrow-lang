@@ -19,4 +19,8 @@ public class SymbolTableEntry {
 	public SymbolTableEntryType getType() {
 		return type;
 	}
+	
+	public String toString() {
+		return getIdentifier();
+	}
 }

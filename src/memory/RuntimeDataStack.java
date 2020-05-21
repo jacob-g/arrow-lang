@@ -1,5 +1,8 @@
 package memory;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import arrow.symboltable.SymbolTableEntry;
@@ -26,12 +29,22 @@ public class RuntimeDataStack {
 	private RuntimeDataStackFrame top;
 	private RuntimeDataStackFrame root;
 	
+	private final Map<RuntimeData, RuntimeDataStackFrame> entries = new HashMap<>();
+	
 	public RuntimeDataStack() {
 		top = root = new RuntimeDataStackFrame();
+		entries.put(root.data, root);
 	}
 	
-	public void push(RuntimeData predecessor) {
+	public void push(RuntimeData parent) {
+		Objects.requireNonNull(parent);
 		
+		if (!entries.containsKey(parent)) {
+			throw new IllegalStateException("Adding invalid parent to runtime stack");
+		}
+		
+		top = new RuntimeDataStackFrame(Optional.of(top), Optional.of(entries.get(parent)));
+		entries.put(top.data, top);
 	}
 	
 	public void push() {
@@ -39,6 +52,7 @@ public class RuntimeDataStack {
 	}
 	
 	public void pop() {
+		entries.remove(top.data);
 		top = top.predecessor.orElseThrow(() -> new IllegalStateException("Popping top runtime data stack frame"));
 	}
 	
@@ -48,12 +62,12 @@ public class RuntimeDataStack {
 	
 	public boolean contains(SymbolTableEntry entry) {
 		RuntimeDataStackFrame frame = top;
-		while (frame != root) {
+		while (frame != null) {
 			if (frame.data.contains(entry)) {
 				return true;
 			}
 			
-			frame = frame.predecessor.get();
+			frame = frame.parent.orElse(null);
 		}
 		
 		return false;
@@ -65,12 +79,12 @@ public class RuntimeDataStack {
 		}
 		
 		RuntimeDataStackFrame frame = top;
-		while (frame != root) {
+		while (frame != null) {
 			if (frame.data.contains(entry)) {
 				return frame.data.lookup(entry);
 			}
 			
-			frame = frame.predecessor.get();
+			frame = frame.parent.orElse(null);
 		}
 		
 		assert false;
