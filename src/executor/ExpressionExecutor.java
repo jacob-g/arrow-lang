@@ -34,6 +34,8 @@ class ExpressionExecutor extends AbstractExecutor {
 		case NOT_EQUAL:
 		case GREATER_THAN:
 		case LESS_THAN:
+		case AND:
+		case OR:
 			return executeMathOperation(node);
 		default:
 			assert false : "Invalid node type passed to expression executor";
@@ -78,6 +80,10 @@ class ExpressionExecutor extends AbstractExecutor {
 			out = boolToInt(op1 > op2); break;
 		case LESS_THAN:
 			out = boolToInt(op1 < op2); break;
+		case AND:
+			out = boolToInt(op1 != 0 && op2 != 0); break;
+		case OR:
+			out = boolToInt(op1 != 0 || op2 != 0); break;
 		default:
 			assert false;
 		}

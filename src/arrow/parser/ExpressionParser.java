@@ -36,6 +36,8 @@ final class ExpressionParser extends AbstractArrowParser {
 	private static final Set<ArrowTokenType> ADD_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.PLUS, ArrowTokenType.MINUS));
 	private static final Set<ArrowTokenType> MULT_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.TIMES, ArrowTokenType.DIVIDE));
 	private static final Set<ArrowTokenType> RELATIONAL_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.GREATER_THAN, ArrowTokenType.LESS_THAN, ArrowTokenType.DOUBLE_EQUAL, ArrowTokenType.NOT_EQUAL));
+	private static final Set<ArrowTokenType> BOOLEAN_BINARY_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.AND, ArrowTokenType.OR));
+	private static final Set<ArrowTokenType> BOOLEAN_UNARY_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.NOT));
 	
 	private static final Map<ArrowTokenType, ParseTreeNodeType> operations = new HashMap<>();
 	static {
@@ -47,10 +49,16 @@ final class ExpressionParser extends AbstractArrowParser {
 		operations.put(ArrowTokenType.LESS_THAN, ParseTreeNodeType.LESS_THAN);
 		operations.put(ArrowTokenType.DOUBLE_EQUAL, ParseTreeNodeType.EQUAL);
 		operations.put(ArrowTokenType.NOT_EQUAL, ParseTreeNodeType.NOT_EQUAL);
+		operations.put(ArrowTokenType.AND, ParseTreeNodeType.AND);
+		operations.put(ArrowTokenType.OR, ParseTreeNodeType.OR);
 	}
 	
 	@Override
 	public ParseResult<ArrowTokenType> parse(List<Token<ArrowTokenType>> tokens) {
+		return parseTwoSided(tokens, BOOLEAN_BINARY_OPERATORS, this::parseBooleanTerm);
+	}
+	
+	private ParseResult<ArrowTokenType> parseBooleanTerm(List<Token<ArrowTokenType>> tokens) {
 		return parseTwoSided(tokens, RELATIONAL_OPERATORS, this::parseRelated);
 	}
 	

@@ -31,7 +31,9 @@ public class MathOperationTreeNode extends AbstractParseTreeNode {
 			ParseTreeNodeType.EQUAL,
 			ParseTreeNodeType.NOT_EQUAL, 
 			ParseTreeNodeType.GREATER_THAN, 
-			ParseTreeNodeType.LESS_THAN));
+			ParseTreeNodeType.LESS_THAN,
+			ParseTreeNodeType.AND,
+			ParseTreeNodeType.OR));
 	
 	public static MathOperationTreeNode of(ParseTreeNodeType operation, ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
 		Objects.requireNonNull(operation);
