@@ -2,8 +2,8 @@ package parser.tree;
 
 import java.util.List;
 
-import arrow.symboltable.SymbolTableEntry;
 import memory.MemoryEntry;
+import symboltable.SymbolTableEntry;
 
 public interface ParseTreeNode {
 	ParseTreeNode getAttribute(ParseTreeAttributeType type);

@@ -1,30 +1,29 @@
-package arrow.symboltable;
+package symboltable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class SymbolTable {
-	private final Map<String, SymbolTableEntry> entries = new HashMap<>();
+public class SymbolTable<K, V> {
+	private final Map<K, V> entries = new HashMap<>();
 	
-	public boolean contains(String name) {
+	public boolean contains(K name) {
 		Objects.requireNonNull(name);
 		
 		return entries.containsKey(name);
 	}
 	
-	public SymbolTableEntry add(String name, SymbolTableEntryType type) {
+	public V add(K name, V entry) {
 		if (contains(name)) {
 			throw new IllegalStateException("Adding already-existing symbol table entry");
 		}
 		
-		SymbolTableEntry entry = new SymbolTableEntry(name, type);
 		entries.put(name, entry);
 		
 		return entry;
 	}
 	
-	public SymbolTableEntry getEntry(String name) {
+	public V getEntry(K name) {
 		if (!contains(name)) {
 			throw new IllegalArgumentException("Looking for non-existent symbol table entry");
 		}

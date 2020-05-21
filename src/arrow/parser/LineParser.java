@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.Objects;
 
 import arrow.ArrowTokenType;
-import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
 import parser.ParseResult;
 import parser.tree.EmptyParseTreeNode;
+import symboltable.StaticSymbolTableStack;
 
 final class LineParser extends AbstractArrowParser {
-	private LineParser(int indentation, SymbolTableStack symbolTable) {
+	private LineParser(int indentation, StaticSymbolTableStack symbolTable) {
 		super(indentation, symbolTable);
 	}
 	
-	public static LineParser of(int indentation, SymbolTableStack symbolTable) {
+	public static LineParser of(int indentation, StaticSymbolTableStack symbolTable) {
 		requireNonNegative(indentation);
 		Objects.requireNonNull(symbolTable);
 		

@@ -5,20 +5,20 @@ import java.util.List;
 import java.util.Objects;
 
 import arrow.ArrowTokenType;
-import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
 import parser.ParseResult;
 import parser.tree.ControlParseTreeNode;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
+import symboltable.StaticSymbolTableStack;
 
 final class LoopParser extends AbstractArrowParser {
 
-	private LoopParser(int indentation, SymbolTableStack symbolTable) {
+	private LoopParser(int indentation, StaticSymbolTableStack symbolTable) {
 		super(indentation, symbolTable);
 	}
 	
-	public static LoopParser of(int indentation, SymbolTableStack symbolTable) {
+	public static LoopParser of(int indentation, StaticSymbolTableStack symbolTable) {
 		requireNonNegative(indentation);
 		Objects.requireNonNull(symbolTable);
 		

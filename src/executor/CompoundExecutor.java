@@ -2,13 +2,13 @@ package executor;
 
 import java.util.Objects;
 
-import arrow.symboltable.SymbolTableEntry;
-import arrow.symboltable.SymbolTableEntryType;
 import memory.MemoryEntry;
 import memory.RuntimeDataStack;
 import parser.tree.ParseTreeAttributeType;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
+import symboltable.SymbolTableEntry;
+import symboltable.SymbolTableEntryType;
 
 public class CompoundExecutor extends AbstractExecutor {
 	private CompoundExecutor(RuntimeDataStack runtimeData) {

@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import arrow.symboltable.SymbolTableEntry;
 import memory.MemoryEntry;
+import symboltable.SymbolTableEntry;
 
 public final class ProgramNode extends AbstractParseTreeNode {
 	private final List<ParseTreeNode> children;

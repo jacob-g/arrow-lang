@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import arrow.symboltable.SymbolTableEntry;
 import memory.MemoryEntry;
+import symboltable.SymbolTableEntry;
 
 public class DeclarationParseTreeNode extends AbstractParseTreeNode {
 

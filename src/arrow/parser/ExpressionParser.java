@@ -10,8 +10,6 @@ import java.util.Set;
 import java.util.function.Function;
 
 import arrow.ArrowTokenType;
-import arrow.symboltable.SymbolTableEntry;
-import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
 import memory.MemoryEntry;
 import parser.ParseResult;
@@ -19,14 +17,16 @@ import parser.tree.DataParseTreeNode;
 import parser.tree.MathOperationTreeNode;
 import parser.tree.ParseTreeNodeType;
 import parser.tree.VariableParseTreeNode;
+import symboltable.StaticSymbolTableStack;
+import symboltable.SymbolTableEntry;
 
 final class ExpressionParser extends AbstractArrowParser {
 
-	private ExpressionParser(int indentation, SymbolTableStack symbolTable) {
+	private ExpressionParser(int indentation, StaticSymbolTableStack symbolTable) {
 		super(indentation, symbolTable);
 	}
 	
-	public static ExpressionParser of(int indentation, SymbolTableStack symbolTable) {
+	public static ExpressionParser of(int indentation, StaticSymbolTableStack symbolTable) {
 		requireNonNegative(indentation);
 		Objects.requireNonNull(symbolTable);
 		

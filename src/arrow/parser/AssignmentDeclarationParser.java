@@ -3,18 +3,18 @@ package arrow.parser;
 import java.util.List;
 
 import arrow.ArrowTokenType;
-import arrow.symboltable.SymbolTableEntry;
-import arrow.symboltable.SymbolTableEntryType;
-import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
 import parser.ParseResult;
 import parser.tree.AssignmentParseTreeNode;
 import parser.tree.DeclarationParseTreeNode;
 import parser.tree.VariableParseTreeNode;
+import symboltable.StaticSymbolTableStack;
+import symboltable.SymbolTableEntry;
+import symboltable.SymbolTableEntryType;
 
 final class AssignmentDeclarationParser extends AbstractArrowParser {
 
-	protected AssignmentDeclarationParser(int indentation, SymbolTableStack symbolTable) {
+	protected AssignmentDeclarationParser(int indentation, StaticSymbolTableStack symbolTable) {
 		super(indentation, symbolTable);
 	}
 	

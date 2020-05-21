@@ -1,4 +1,4 @@
-package arrow.symboltable;
+package symboltable;
 
 public enum SymbolTableEntryType {
 	FUNCTION,

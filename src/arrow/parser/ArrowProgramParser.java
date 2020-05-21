@@ -4,17 +4,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 import arrow.ArrowTokenType;
-import arrow.symboltable.SymbolTableEntryType;
-import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
 import parser.ParseResult;
 import parser.tree.ParseTreeNode;
 import parser.tree.ProgramNode;
+import symboltable.StaticSymbolTableStack;
+import symboltable.SymbolTableEntryType;
 
 public class ArrowProgramParser extends AbstractArrowParser {
 
 	public ArrowProgramParser() {
-		super(0, SymbolTableStack.build());
+		super(0, new StaticSymbolTableStack());
 	
 		//TODO: have a definition for built-in types
 		symbolTable.add("int", SymbolTableEntryType.TYPE);

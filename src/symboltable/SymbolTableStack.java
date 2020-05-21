@@ -1,27 +1,27 @@
-package arrow.symboltable;
+package symboltable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public class SymbolTableStack {
+public abstract class SymbolTableStack<K, V> {
 	private final ChainedStackEntry root;
 	private ChainedStackEntry top;
-	private final Map<SymbolTable, ChainedStackEntry> stackEntries = new HashMap<>();
+	private final Map<SymbolTable<K, V>, ChainedStackEntry> stackEntries = new HashMap<>();
 	
 	private class ChainedStackEntry {
-		private final SymbolTable table;
+		private final SymbolTable<K, V> table;
 		private final Optional<ChainedStackEntry> predecessor; //the immediate entry above in the stack
 		private final Optional<ChainedStackEntry> parent; //the parent where scoping looks
 		
-		private ChainedStackEntry(SymbolTable table) {
+		private ChainedStackEntry(SymbolTable<K, V> table) {
 			this(table, Optional.empty(), Optional.empty());
 			
 			assert table != null;
 		}
 		
-		private ChainedStackEntry(SymbolTable table, ChainedStackEntry predecessor, ChainedStackEntry parent) {
+		private ChainedStackEntry(SymbolTable<K, V> table, ChainedStackEntry predecessor, ChainedStackEntry parent) {
 			this(table, Optional.of(predecessor), Optional.of(parent));
 			
 			assert table != null;
@@ -29,7 +29,7 @@ public class SymbolTableStack {
 			assert parent != null;
 		}
 		
-		private ChainedStackEntry(SymbolTable table, Optional<ChainedStackEntry> predecessor, Optional<ChainedStackEntry> parent) {
+		private ChainedStackEntry(SymbolTable<K, V> table, Optional<ChainedStackEntry> predecessor, Optional<ChainedStackEntry> parent) {
 			assert table != null;
 			assert predecessor != null;
 			assert parent != null;
@@ -40,40 +40,36 @@ public class SymbolTableStack {
 		}
 	}
 	
-	private SymbolTableStack() {
-		this.root = new ChainedStackEntry(new SymbolTable());
+	protected SymbolTableStack() {
+		this.root = new ChainedStackEntry(new SymbolTable<K, V>());
 		this.top = root;
 		
 		stackEntries.put(root.table, root);
 	}
-	
-	public static SymbolTableStack build() {
-		return new SymbolTableStack();
+		
+	protected V add(K name, V entry) {
+		return top.table.add(name, entry);
 	}
 	
-	public SymbolTable getRoot() {
+	public SymbolTable<K, V> getRoot() {
 		return root.table;
 	}
 	
-	public SymbolTableEntry add(String name, SymbolTableEntryType type) {
-		return top.table.add(name, type);
-	}
-	
-	public SymbolTable push(SymbolTable predecessor) {
+	public SymbolTable<K, V> push(SymbolTable<K, V> predecessor) {
 		Objects.requireNonNull(predecessor);
 		
 		if (!stackEntries.containsKey(predecessor)) {
 			throw new IllegalStateException("Predecessor not contained in this stack");
 		}
 		
-		SymbolTable newTable = new SymbolTable();
+		SymbolTable<K, V> newTable = new SymbolTable<K, V>();
 		top = new ChainedStackEntry(newTable, top, stackEntries.get(predecessor));
 		stackEntries.put(newTable, top);
 		
 		return newTable;
 	}
 	
-	public SymbolTable push() {
+	public SymbolTable<K, V> push() {
 		return push(top.table);
 	}
 	
@@ -87,7 +83,7 @@ public class SymbolTableStack {
 		stackEntries.remove(removedEntry.table);
 	}
 	
-	public boolean contains(String name) {
+	public boolean contains(K name) {
 		ChainedStackEntry currentFrame = top;
 		while (currentFrame != null) {
 			if (currentFrame.table.contains(name)) {
@@ -100,7 +96,7 @@ public class SymbolTableStack {
 		return false;
 	}
 	
-	public SymbolTableEntry lookup(String name) {
+	public V lookup(K name) {
 		if (!contains(name)) {
 			throw new IllegalStateException("Looking up non-existent entry");
 		}

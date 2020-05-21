@@ -5,7 +5,6 @@ import java.util.Scanner;
 import arrow.ArrowLexer;
 import arrow.ArrowTokenType;
 import arrow.parser.ArrowProgramParser;
-import arrow.symboltable.SymbolTableStack;
 import executor.CompoundExecutor;
 import lexer.TokenLexResult;
 import memory.RuntimeDataStack;

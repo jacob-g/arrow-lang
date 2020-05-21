@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import arrow.symboltable.SymbolTableEntry;
 import memory.MemoryEntry;
+import symboltable.SymbolTableEntry;
 
 public class MathOperationTreeNode extends AbstractParseTreeNode {
 	private final ParseTreeNodeType operation;

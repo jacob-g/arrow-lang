@@ -3,8 +3,8 @@ package parser.tree;
 import java.util.ArrayList;
 import java.util.List;
 
-import arrow.symboltable.SymbolTableEntry;
 import memory.MemoryEntry;
+import symboltable.SymbolTableEntry;
 
 public class EmptyParseTreeNode extends AbstractParseTreeNode {
 	@Override
