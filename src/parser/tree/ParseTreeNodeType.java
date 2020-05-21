@@ -20,6 +20,7 @@ public enum ParseTreeNodeType {
 	SUBTRACT(new HashSet<>()),
 	MULTIPLY(new HashSet<>()),
 	DIVIDE(new HashSet<>()),
+	MODULO(new HashSet<>()),
 	GREATER_THAN(new HashSet<>()),
 	LESS_THAN(new HashSet<>()),
 	EQUAL(new HashSet<>()),

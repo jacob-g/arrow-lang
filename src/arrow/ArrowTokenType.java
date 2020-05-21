@@ -30,6 +30,7 @@ public enum ArrowTokenType {
 	MINUS(ArrowTokenCategory.SYMBOL, "-"),
 	TIMES(ArrowTokenCategory.SYMBOL, "*"),
 	DIVIDE(ArrowTokenCategory.SYMBOL, "/"),
+	MODULO(ArrowTokenCategory.SYMBOL, "%"),
 	COMMA(ArrowTokenCategory.SYMBOL, ","),
 	AND(ArrowTokenCategory.SYMBOL, "and"),
 	OR(ArrowTokenCategory.SYMBOL, "or"),

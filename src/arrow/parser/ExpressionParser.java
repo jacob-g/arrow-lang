@@ -34,7 +34,7 @@ final class ExpressionParser extends AbstractArrowParser {
 	}
 
 	private static final Set<ArrowTokenType> ADD_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.PLUS, ArrowTokenType.MINUS));
-	private static final Set<ArrowTokenType> MULT_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.TIMES, ArrowTokenType.DIVIDE));
+	private static final Set<ArrowTokenType> MULT_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.TIMES, ArrowTokenType.DIVIDE, ArrowTokenType.MODULO));
 	private static final Set<ArrowTokenType> RELATIONAL_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.GREATER_THAN, ArrowTokenType.LESS_THAN, ArrowTokenType.DOUBLE_EQUAL, ArrowTokenType.NOT_EQUAL));
 	private static final Set<ArrowTokenType> BOOLEAN_BINARY_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.AND, ArrowTokenType.OR));
 	private static final Set<ArrowTokenType> BOOLEAN_UNARY_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.NOT));
@@ -45,6 +45,7 @@ final class ExpressionParser extends AbstractArrowParser {
 		operations.put(ArrowTokenType.MINUS, ParseTreeNodeType.SUBTRACT);
 		operations.put(ArrowTokenType.TIMES, ParseTreeNodeType.MULTIPLY);
 		operations.put(ArrowTokenType.DIVIDE, ParseTreeNodeType.DIVIDE);
+		operations.put(ArrowTokenType.MODULO, ParseTreeNodeType.MODULO);
 		operations.put(ArrowTokenType.GREATER_THAN, ParseTreeNodeType.GREATER_THAN);
 		operations.put(ArrowTokenType.LESS_THAN, ParseTreeNodeType.LESS_THAN);
 		operations.put(ArrowTokenType.DOUBLE_EQUAL, ParseTreeNodeType.EQUAL);
@@ -66,7 +67,6 @@ final class ExpressionParser extends AbstractArrowParser {
 		return parseTwoSided(tokens, ADD_OPERATORS, this::parseAddend);
 	}
 	
-	//TODO: eliminate repeated code
 	private ParseResult<ArrowTokenType> parseAddend(List<Token<ArrowTokenType>> tokens) {
 		return parseTwoSided(tokens, MULT_OPERATORS, this::parseFactor);
 	}

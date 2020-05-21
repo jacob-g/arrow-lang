@@ -39,6 +39,9 @@ public class CompoundExecutor extends AbstractExecutor {
 			case LOOP:
 				executeLoop(child);
 				break;
+			case EMPTY:
+				//do nothing
+				break;
 			default:
 				assert false;
 				return null;
@@ -78,8 +81,6 @@ public class CompoundExecutor extends AbstractExecutor {
 		
 		SymbolTableEntry identifier = node.getAttribute(ParseTreeAttributeType.IDENTIFIER).getIdentifier();
 		assert identifier.getType() == SymbolTableEntryType.VARIABLE;
-		
-		
 		
 		MemoryEntry value = ExpressionExecutor.of(runtimeData).execute(node.getChildren().get(0));
 		System.out.println("Assigning to variable: " + identifier + " value " + value.getValue());

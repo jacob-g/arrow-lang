@@ -31,6 +31,7 @@ class ExpressionExecutor extends AbstractExecutor {
 		case MULTIPLY:
 		case DIVIDE:
 		case EQUAL:
+		case MODULO:
 		case NOT_EQUAL:
 		case GREATER_THAN:
 		case LESS_THAN:
@@ -72,6 +73,8 @@ class ExpressionExecutor extends AbstractExecutor {
 			out = op1 * op2; break;
 		case DIVIDE:
 			out = op1 / op2; break;
+		case MODULO:
+			out = op1 % op2; break;
 		case EQUAL:
 			out = boolToInt(op1 == op2); break;
 		case NOT_EQUAL:

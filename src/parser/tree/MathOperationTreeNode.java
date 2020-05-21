@@ -28,9 +28,10 @@ public class MathOperationTreeNode extends AbstractParseTreeNode {
 			ParseTreeNodeType.SUBTRACT, 
 			ParseTreeNodeType.MULTIPLY, 
 			ParseTreeNodeType.DIVIDE,
+			ParseTreeNodeType.MODULO,
 			ParseTreeNodeType.EQUAL,
 			ParseTreeNodeType.NOT_EQUAL, 
-			ParseTreeNodeType.GREATER_THAN, 
+			ParseTreeNodeType.GREATER_THAN,
 			ParseTreeNodeType.LESS_THAN,
 			ParseTreeNodeType.AND,
 			ParseTreeNodeType.OR));
