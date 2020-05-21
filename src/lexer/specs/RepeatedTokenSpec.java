@@ -1,6 +1,6 @@
 package lexer.specs;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +29,7 @@ public final class RepeatedTokenSpec<T> implements TokenSpec<T> {
 		
 		assert spec != null;
 		
-		List<Token<T>> outTokens = new ArrayList<>();
+		List<Token<T>> outTokens = new LinkedList<>();
 		String remainder = text;
 		boolean anyOccurrences = false;
 		boolean moreToParse = true;

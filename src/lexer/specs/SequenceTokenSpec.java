@@ -1,7 +1,7 @@
 package lexer.specs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +37,7 @@ public final class SequenceTokenSpec<T> implements TokenSpec<T> {
 		assert specs != null;
 		
 		String remainder = text;
-		List<Token<T>> outResults = new ArrayList<>();
+		List<Token<T>> outResults = new LinkedList<>();
 		
 		for (TokenSpec<T> spec : specs) {
 			TokenLexResult<T> result = spec.parse(remainder);
