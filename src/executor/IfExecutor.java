@@ -27,12 +27,10 @@ class IfExecutor extends AbstractExecutor {
 		MemoryEntry testValue = ExpressionExecutor.of(runtimeData).execute(testNode);
 		
 		if (testValue.getValue() == 0) {
-			System.out.println("Entering if");
+			//if the condition is true, then run the body
 			runtimeData.push();
 			CompoundExecutor.of(runtimeData).execute(node);
 			runtimeData.pop();
-		} else {
-			System.out.println("Not entering if");
 		}
 		
 		return null;

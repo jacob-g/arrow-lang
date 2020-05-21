@@ -2,7 +2,7 @@ package arrow.parser;
 
 import java.util.List;
 
-import arrow.ArrowTokenType;
+import arrow.lexer.ArrowTokenType;
 import lexer.Token;
 import parser.ParseResult;
 import parser.tree.AssignmentParseTreeNode;

@@ -68,15 +68,12 @@ public class CompoundExecutor extends AbstractExecutor {
 		
 		SymbolTableEntry identifier = node.getAttribute(ParseTreeAttributeType.IDENTIFIER).getIdentifier();
 		assert identifier.getType() == SymbolTableEntryType.VARIABLE;
-		
-		System.out.println("Declaring variable: " + identifier);
-		
+				
 		runtimeData.add(identifier);
 	}
 	
 	private void executeAssignment(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.ASSIGNMENT;
-		
 		assert node.getChildren().size() == 1;
 		
 		SymbolTableEntry identifier = node.getAttribute(ParseTreeAttributeType.IDENTIFIER).getIdentifier();

@@ -1,4 +1,4 @@
-package arrow;
+package arrow.lexer;
 
 public enum ArrowTokenCategory {
 	IDENTIFIER,

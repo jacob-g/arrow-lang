@@ -1,4 +1,4 @@
-package arrow;
+package arrow.lexer;
 
 import java.util.Collections;
 import java.util.HashMap;

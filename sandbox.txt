@@ -2,21 +2,22 @@ main
 int in
 
 in = 5 //set input here
+
 int result
 result = 1
 
-/--< in < 3 //if the input is less than three then the loop wont work so just skip over it entirely
+/--< in < 3 //if the input is less than three then the loop won't work so just skip over it entirely
 | int counter
 | counter = 2
-| /--> //loop from two to in minus one
-| | /--< in % counter != 0 //if the counter divides in then in is not prime
+| /--> //loop from 2 to (in-1)
+| | /--< in % counter != 0 //if the counter divides in, then in is not prime
 | | | result = 0
 | | \-->
 | | counter = counter + 1
 | \--< counter < in
 \-->
 
-/--< in != 2 //if the input is two then the number is prime
+/--< in != 2 //if the input is 2 then the number is prime
 | result = 1
 \-->
 

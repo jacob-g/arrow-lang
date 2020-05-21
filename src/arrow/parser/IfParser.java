@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import arrow.ArrowTokenType;
+import arrow.lexer.ArrowTokenType;
 import lexer.Token;
 import parser.ParseResult;
 import parser.tree.ControlParseTreeNode;

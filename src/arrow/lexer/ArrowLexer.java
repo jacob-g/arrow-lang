@@ -1,8 +1,9 @@
-package arrow;
+package arrow.lexer;
 
 import java.util.stream.Collectors;
 
 import lexer.TokenLexResult;
+import lexer.specs.CharPredicateSpec;
 import lexer.specs.CombinerSpec;
 import lexer.specs.FixedStringTokenSpec;
 import lexer.specs.MultipleOptionTokenSpec;
@@ -45,12 +46,7 @@ public class ArrowLexer {
 	private static final TokenSpec<ArrowTokenType> commentSpec = TyperSpec.of(
 			CombinerSpec.of(SequenceTokenSpec.of(
 					FixedStringTokenSpec.of("//"), 
-					RepeatedTokenSpec.of(
-							MultipleOptionTokenSpec.of(
-									TokenSpec.getAlnumSpec(),
-									whiteSpaceSpec
-									),
-							false), 
+					RepeatedTokenSpec.of(CharPredicateSpec.of(c -> c != '\n'), false),
 					FixedStringTokenSpec.of("\n"))), ArrowTokenType.NEWLINE);
 	
 	private static final TokenSpec<ArrowTokenType> allowedWordSpec = MultipleOptionTokenSpec.of(commentSpec, keywordSpec, symbolSpec, numberSpec, identifierSpec, newLineSpec, whiteSpaceSpec);

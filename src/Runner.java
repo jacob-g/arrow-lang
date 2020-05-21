@@ -2,8 +2,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import arrow.ArrowLexer;
-import arrow.ArrowTokenType;
+import arrow.lexer.ArrowLexer;
+import arrow.lexer.ArrowTokenType;
 import arrow.parser.ArrowProgramParser;
 import executor.CompoundExecutor;
 import lexer.TokenLexResult;

@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
-import arrow.ArrowTokenType;
+import arrow.lexer.ArrowTokenType;
 import lexer.Token;
 import memory.MemoryEntry;
 import parser.ParseResult;

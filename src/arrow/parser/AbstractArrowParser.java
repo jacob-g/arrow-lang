@@ -1,8 +1,8 @@
 package arrow.parser;
 
-import arrow.ArrowTokenType;
-
 import java.util.List;
+
+import arrow.lexer.ArrowTokenType;
 import lexer.Token;
 import parser.AbstractParser;
 import parser.ParseResult;
