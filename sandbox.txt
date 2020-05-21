@@ -1,4 +1,5 @@
 main
 int x
 int y
-x = 4 + (y + 1)
+y = 3
+x = 4 + y * 2

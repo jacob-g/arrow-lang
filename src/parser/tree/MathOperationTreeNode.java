@@ -15,22 +15,25 @@ public class MathOperationTreeNode extends AbstractParseTreeNode {
 		DIVIDE
 	}
 	
+	private final Operation operation;
 	private final ParseTreeNode firstOperand;
 	private final ParseTreeNode secondOperand;
 	
-	private MathOperationTreeNode(ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
+	private MathOperationTreeNode(Operation operation, ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
 		assert firstOperand != null;
 		assert secondOperand != null;
 		
+		this.operation = operation;
 		this.firstOperand = firstOperand;
 		this.secondOperand = secondOperand;
 	}
 	
-	public static MathOperationTreeNode of(ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
+	public static MathOperationTreeNode of(Operation operation, ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
+		Objects.requireNonNull(operation);
 		Objects.requireNonNull(firstOperand);
 		Objects.requireNonNull(secondOperand);
 		
-		return new MathOperationTreeNode(firstOperand, secondOperand);
+		return new MathOperationTreeNode(operation, firstOperand, secondOperand);
 	}
 
 	@Override
