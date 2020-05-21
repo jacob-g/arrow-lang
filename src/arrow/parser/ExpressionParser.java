@@ -16,6 +16,7 @@ import memory.MemoryEntry;
 import parser.ParseResult;
 import parser.tree.DataParseTreeNode;
 import parser.tree.MathOperationTreeNode;
+import parser.tree.ParseTreeNodeType;
 import parser.tree.VariableParseTreeNode;
 
 final class ExpressionParser extends AbstractArrowParser {
@@ -34,12 +35,12 @@ final class ExpressionParser extends AbstractArrowParser {
 	private static final Set<ArrowTokenType> ADD_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.PLUS, ArrowTokenType.MINUS));
 	private static final Set<ArrowTokenType> MULT_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.TIMES, ArrowTokenType.DIVIDE));
 	
-	private static final Map<ArrowTokenType, MathOperationTreeNode.Operation> operations = new HashMap<>();
+	private static final Map<ArrowTokenType, ParseTreeNodeType> operations = new HashMap<>();
 	static {
-		operations.put(ArrowTokenType.PLUS, MathOperationTreeNode.Operation.ADD);
-		operations.put(ArrowTokenType.MINUS, MathOperationTreeNode.Operation.SUBTRACT);
-		operations.put(ArrowTokenType.TIMES, MathOperationTreeNode.Operation.MULTIPLY);
-		operations.put(ArrowTokenType.DIVIDE, MathOperationTreeNode.Operation.DIVIDE);
+		operations.put(ArrowTokenType.PLUS, ParseTreeNodeType.ADD);
+		operations.put(ArrowTokenType.MINUS, ParseTreeNodeType.SUBTRACT);
+		operations.put(ArrowTokenType.TIMES, ParseTreeNodeType.MULTIPLY);
+		operations.put(ArrowTokenType.DIVIDE, ParseTreeNodeType.DIVIDE);
 	}
 	
 	@Override
@@ -54,7 +55,7 @@ final class ExpressionParser extends AbstractArrowParser {
 		}
 				
 		if (overallResult.getRemainder().size() >= 2 && ADD_OPERATORS.contains(overallResult.getRemainder().get(0).getType())) {
-			MathOperationTreeNode.Operation operation = operations.get(overallResult.getRemainder().get(0).getType());
+			ParseTreeNodeType operation = operations.get(overallResult.getRemainder().get(0).getType());
 			ParseResult<ArrowTokenType> secondAddendResult = parseAddend(overallResult.getRemainder().subList(1, overallResult.getRemainder().size()));
 			if (!secondAddendResult.getSuccess()) {
 				return secondAddendResult;
@@ -78,7 +79,7 @@ final class ExpressionParser extends AbstractArrowParser {
 		}
 				
 		if (overallResult.getRemainder().size() >= 2 && MULT_OPERATORS.contains(overallResult.getRemainder().get(0).getType())) {
-			MathOperationTreeNode.Operation operation = operations.get(overallResult.getRemainder().get(0).getType());
+			ParseTreeNodeType operation = operations.get(overallResult.getRemainder().get(0).getType());
 			ParseResult<ArrowTokenType> secondFactorResult = parseFactor(overallResult.getRemainder().subList(1, overallResult.getRemainder().size()));
 			if (!secondFactorResult.getSuccess()) {
 				return secondFactorResult;

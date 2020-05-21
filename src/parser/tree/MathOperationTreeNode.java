@@ -1,25 +1,20 @@
 package parser.tree;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import arrow.symboltable.SymbolTableEntry;
 import memory.MemoryEntry;
 
 public class MathOperationTreeNode extends AbstractParseTreeNode {
-	public static enum Operation {
-		ADD,
-		SUBTRACT,
-		MULTIPLY,
-		DIVIDE
-	}
-	
-	private final Operation operation;
+	private final ParseTreeNodeType operation;
 	private final ParseTreeNode firstOperand;
 	private final ParseTreeNode secondOperand;
 	
-	private MathOperationTreeNode(Operation operation, ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
+	private MathOperationTreeNode(ParseTreeNodeType operation, ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
 		assert firstOperand != null;
 		assert secondOperand != null;
 		
@@ -28,10 +23,15 @@ public class MathOperationTreeNode extends AbstractParseTreeNode {
 		this.secondOperand = secondOperand;
 	}
 	
-	public static MathOperationTreeNode of(Operation operation, ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
+	private static final Set<ParseTreeNodeType> allowedOperations = new HashSet<>(Arrays.asList(ParseTreeNodeType.ADD, ParseTreeNodeType.SUBTRACT, ParseTreeNodeType.MULTIPLY, ParseTreeNodeType.DIVIDE));
+	public static MathOperationTreeNode of(ParseTreeNodeType operation, ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
 		Objects.requireNonNull(operation);
 		Objects.requireNonNull(firstOperand);
 		Objects.requireNonNull(secondOperand);
+		
+		if (!allowedOperations.contains(operation)) {
+			throw new IllegalArgumentException("Illegal operation given to math node");
+		}
 		
 		return new MathOperationTreeNode(operation, firstOperand, secondOperand);
 	}
@@ -43,7 +43,9 @@ public class MathOperationTreeNode extends AbstractParseTreeNode {
 
 	@Override
 	public ParseTreeNodeType getType() {
-		return ParseTreeNodeType.MATH;
+		assert operation != null && allowedOperations.contains(operation);
+		
+		return operation;
 	}
 
 	@Override

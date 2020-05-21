@@ -1,5 +1,6 @@
 package arrow.parser;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import arrow.ArrowTokenType;
@@ -7,6 +8,8 @@ import arrow.symboltable.SymbolTableEntryType;
 import arrow.symboltable.SymbolTableStack;
 import lexer.Token;
 import parser.ParseResult;
+import parser.tree.ParseTreeNode;
+import parser.tree.ProgramNode;
 
 public class ArrowProgramParser extends AbstractArrowParser {
 
@@ -39,6 +42,7 @@ public class ArrowProgramParser extends AbstractArrowParser {
 		}
 		
 		List<Token<ArrowTokenType>> remainder = newLineResult.getRemainder();
+		List<ParseTreeNode> children = new LinkedList<>();
 		while (!remainder.isEmpty()) {
 			ParseResult<ArrowTokenType> lineResult = LineParser.of(0, symbolTable).parse(remainder);
 			
@@ -46,9 +50,11 @@ public class ArrowProgramParser extends AbstractArrowParser {
 				return lineResult;
 			}
 			
+			children.add(lineResult.getNode());
+			
 			remainder = lineResult.getRemainder();
 		}
 		
-		return null;
+		return ParseResult.of(ProgramNode.of(children), new LinkedList<>());
 	}
 }

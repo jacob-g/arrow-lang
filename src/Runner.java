@@ -5,7 +5,9 @@ import java.util.Scanner;
 import arrow.ArrowLexer;
 import arrow.ArrowTokenType;
 import arrow.parser.ArrowProgramParser;
+import executor.CompoundExecutor;
 import lexer.TokenLexResult;
+import parser.ParseResult;
 
 public class Runner {
 	public static void main(String[] args) {
@@ -30,10 +32,20 @@ public class Runner {
 		}
 		
 		TokenLexResult<ArrowTokenType> lexResult = ArrowLexer.parse(fileBuilder.toString());
+		System.out.println("Lexer result:");
 		System.out.println(lexResult);
-		
-		if (lexResult.getSuccess()) {
-			System.out.println(new ArrowProgramParser().parse(lexResult.getResults()));
+		if (!lexResult.getSuccess()) {
+			return;
 		}
+		
+		System.out.println("Parser result:");
+		ParseResult<ArrowTokenType> parseResult = new ArrowProgramParser().parse(lexResult.getResults());
+		System.out.println(parseResult);
+		if (!parseResult.getSuccess()) {
+			return;
+		}
+		
+		System.out.println("Executor result:");
+		new CompoundExecutor().execute(parseResult.getNode());
 	}
 }

@@ -56,7 +56,7 @@ public final class TokenLexResult<T> {
 	
 	public String toString() {
 		return getSuccess() 
-				? results.get().stream().map(token -> token.toString()).collect(Collectors.joining(",", "[", "]")) + "\n" + "Remainder: " + getRemainder() 
+				? results.get().stream().map(token -> token.toString()).collect(Collectors.joining(",", "[", "]")) + (getRemainder().isEmpty() ? "" : "\n" + "Remainder: " + getRemainder()) 
 				: "<<<LEXER FAILURE>>>\nPoint: " + remainder.substring(0, Math.min(20, remainder.length()));
 	}
 }

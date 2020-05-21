@@ -38,8 +38,7 @@ public class DataParseTreeNode extends AbstractParseTreeNode {
 
 	@Override
 	public MemoryEntry getData() {
-		// TODO Auto-generated method stub
-		return null;
+		return data;
 	}
 
 }

@@ -16,7 +16,10 @@ public enum ParseTreeNodeType {
 	WHILE(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TEST))),
 	FUNCTION(new HashSet<>(Arrays.asList(ParseTreeAttributeType.ARGUMENTS, ParseTreeAttributeType.IDENTIFIER, ParseTreeAttributeType.TYPE))),
 	DATA(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TYPE))),
-	MATH(new HashSet<>()),
+	ADD(new HashSet<>()),
+	SUBTRACT(new HashSet<>()),
+	MULTIPLY(new HashSet<>()),
+	DIVIDE(new HashSet<>()),
 	VARIABLE(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TYPE)));
 	
 	public final Set<ParseTreeAttributeType> VISIBLE_ATTRIBUTES;
