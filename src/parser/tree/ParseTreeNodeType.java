@@ -20,6 +20,12 @@ public enum ParseTreeNodeType {
 	SUBTRACT(new HashSet<>()),
 	MULTIPLY(new HashSet<>()),
 	DIVIDE(new HashSet<>()),
+	GREATER_THAN(new HashSet<>()),
+	LESS_THAN(new HashSet<>()),
+	EQUAL(new HashSet<>()),
+	NOT_EQUAL(new HashSet<>()),
+	AND(new HashSet<>()),
+	OR(new HashSet<>()),
 	VARIABLE(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TYPE)));
 	
 	public final Set<ParseTreeAttributeType> VISIBLE_ATTRIBUTES;

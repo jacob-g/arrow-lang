@@ -49,5 +49,6 @@ public class Runner {
 		
 		System.out.println("Executor result:");
 		CompoundExecutor.of(new RuntimeDataStack()).execute(parseResult.getNode());
+		stem.out.println("Execution completed");
 	}
 }

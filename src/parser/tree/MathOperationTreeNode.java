@@ -23,7 +23,16 @@ public class MathOperationTreeNode extends AbstractParseTreeNode {
 		this.secondOperand = secondOperand;
 	}
 	
-	private static final Set<ParseTreeNodeType> allowedOperations = new HashSet<>(Arrays.asList(ParseTreeNodeType.ADD, ParseTreeNodeType.SUBTRACT, ParseTreeNodeType.MULTIPLY, ParseTreeNodeType.DIVIDE));
+	private static final Set<ParseTreeNodeType> allowedOperations = new HashSet<>(Arrays.asList(
+			ParseTreeNodeType.ADD, 
+			ParseTreeNodeType.SUBTRACT, 
+			ParseTreeNodeType.MULTIPLY, 
+			ParseTreeNodeType.DIVIDE,
+			ParseTreeNodeType.EQUAL,
+			ParseTreeNodeType.NOT_EQUAL, 
+			ParseTreeNodeType.GREATER_THAN, 
+			ParseTreeNodeType.LESS_THAN));
+	
 	public static MathOperationTreeNode of(ParseTreeNodeType operation, ParseTreeNode firstOperand, ParseTreeNode secondOperand) {
 		Objects.requireNonNull(operation);
 		Objects.requireNonNull(firstOperand);

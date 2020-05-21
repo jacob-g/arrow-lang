@@ -36,6 +36,9 @@ public class CompoundExecutor extends AbstractExecutor {
 			case IF:
 				executeIf(child);
 				break;
+			case LOOP:
+				executeLoop(child);
+				break;
 			default:
 				assert false;
 				return null;
@@ -49,6 +52,12 @@ public class CompoundExecutor extends AbstractExecutor {
 		assert node.getType() == ParseTreeNodeType.IF;
 		
 		IfExecutor.of(runtimeData).execute(node);
+	}
+	
+	private void executeLoop(ParseTreeNode node) {
+		assert node.getType() == ParseTreeNodeType.LOOP;
+		
+		LoopExecutor.of(runtimeData).execute(node);
 	}
 	
 	private void executeDeclaration(ParseTreeNode node) {

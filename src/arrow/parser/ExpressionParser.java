@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 import arrow.ArrowTokenType;
 import arrow.symboltable.SymbolTableEntry;
@@ -34,6 +35,7 @@ final class ExpressionParser extends AbstractArrowParser {
 
 	private static final Set<ArrowTokenType> ADD_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.PLUS, ArrowTokenType.MINUS));
 	private static final Set<ArrowTokenType> MULT_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.TIMES, ArrowTokenType.DIVIDE));
+	private static final Set<ArrowTokenType> RELATIONAL_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.GREATER_THAN, ArrowTokenType.LESS_THAN, ArrowTokenType.DOUBLE_EQUAL, ArrowTokenType.NOT_EQUAL));
 	
 	private static final Map<ArrowTokenType, ParseTreeNodeType> operations = new HashMap<>();
 	static {
@@ -41,51 +43,44 @@ final class ExpressionParser extends AbstractArrowParser {
 		operations.put(ArrowTokenType.MINUS, ParseTreeNodeType.SUBTRACT);
 		operations.put(ArrowTokenType.TIMES, ParseTreeNodeType.MULTIPLY);
 		operations.put(ArrowTokenType.DIVIDE, ParseTreeNodeType.DIVIDE);
+		operations.put(ArrowTokenType.GREATER_THAN, ParseTreeNodeType.GREATER_THAN);
+		operations.put(ArrowTokenType.LESS_THAN, ParseTreeNodeType.LESS_THAN);
+		operations.put(ArrowTokenType.DOUBLE_EQUAL, ParseTreeNodeType.EQUAL);
+		operations.put(ArrowTokenType.NOT_EQUAL, ParseTreeNodeType.NOT_EQUAL);
 	}
 	
 	@Override
 	public ParseResult<ArrowTokenType> parse(List<Token<ArrowTokenType>> tokens) {
-		if (tokens.size() < 1) {
-			return ParseResult.failure("Unexpected end of data", tokens);
-		}
-		
-		ParseResult<ArrowTokenType> overallResult = parseAddend(tokens);
-		if (!overallResult.getSuccess()) {
-			return overallResult;
-		}
-				
-		if (overallResult.getRemainder().size() >= 2 && ADD_OPERATORS.contains(overallResult.getRemainder().get(0).getType())) {
-			ParseTreeNodeType operation = operations.get(overallResult.getRemainder().get(0).getType());
-			ParseResult<ArrowTokenType> secondAddendResult = parseAddend(overallResult.getRemainder().subList(1, overallResult.getRemainder().size()));
-			if (!secondAddendResult.getSuccess()) {
-				return secondAddendResult;
-			}
-			
-			overallResult = ParseResult.of(MathOperationTreeNode.of(operation, overallResult.getNode(), secondAddendResult.getNode()), secondAddendResult.getRemainder());
-		}
-		
-		return overallResult;
+		return parseTwoSided(tokens, RELATIONAL_OPERATORS, this::parseRelated);
+	}
+	
+	private ParseResult<ArrowTokenType> parseRelated(List<Token<ArrowTokenType>> tokens) {
+		return parseTwoSided(tokens, ADD_OPERATORS, this::parseAddend);
 	}
 	
 	//TODO: eliminate repeated code
 	private ParseResult<ArrowTokenType> parseAddend(List<Token<ArrowTokenType>> tokens) {
+		return parseTwoSided(tokens, MULT_OPERATORS, this::parseFactor);
+	}
+	
+	private ParseResult<ArrowTokenType> parseTwoSided(List<Token<ArrowTokenType>> tokens, Set<ArrowTokenType> operators, Function<List<Token<ArrowTokenType>>, ParseResult<ArrowTokenType>> innerParser) {
 		if (tokens.size() < 1) {
 			return ParseResult.failure("Unexpected end of data", tokens);
 		}
 		
-		ParseResult<ArrowTokenType> overallResult = parseFactor(tokens);
+		ParseResult<ArrowTokenType> overallResult = innerParser.apply(tokens);
 		if (!overallResult.getSuccess()) {
 			return overallResult;
 		}
 				
-		if (overallResult.getRemainder().size() >= 2 && MULT_OPERATORS.contains(overallResult.getRemainder().get(0).getType())) {
+		if (overallResult.getRemainder().size() >= 2 && operators.contains(overallResult.getRemainder().get(0).getType())) {
 			ParseTreeNodeType operation = operations.get(overallResult.getRemainder().get(0).getType());
-			ParseResult<ArrowTokenType> secondFactorResult = parseFactor(overallResult.getRemainder().subList(1, overallResult.getRemainder().size()));
-			if (!secondFactorResult.getSuccess()) {
-				return secondFactorResult;
+			ParseResult<ArrowTokenType> secondOperandResult = innerParser.apply(overallResult.getRemainder().subList(1, overallResult.getRemainder().size()));
+			if (!secondOperandResult.getSuccess()) {
+				return secondOperandResult;
 			}
 			
-			overallResult = ParseResult.of(MathOperationTreeNode.of(operation, overallResult.getNode(), secondFactorResult.getNode()), secondFactorResult.getRemainder());
+			overallResult = ParseResult.of(MathOperationTreeNode.of(operation, overallResult.getNode(), secondOperandResult.getNode()), secondOperandResult.getRemainder());
 		}
 		
 		return overallResult;

@@ -30,11 +30,19 @@ class ExpressionExecutor extends AbstractExecutor {
 		case SUBTRACT:
 		case MULTIPLY:
 		case DIVIDE:
+		case EQUAL:
+		case NOT_EQUAL:
+		case GREATER_THAN:
+		case LESS_THAN:
 			return executeMathOperation(node);
 		default:
 			assert false : "Invalid node type passed to expression executor";
 			return null;
 		}
+	}
+	
+	private int boolToInt(boolean x) {
+		return x ? 1 : 0;
 	}
 	
 	private MemoryEntry executeMathOperation(ParseTreeNode node) {
@@ -62,6 +70,14 @@ class ExpressionExecutor extends AbstractExecutor {
 			out = op1 * op2; break;
 		case DIVIDE:
 			out = op1 / op2; break;
+		case EQUAL:
+			out = boolToInt(op1 == op2); break;
+		case NOT_EQUAL:
+			out = boolToInt(op1 != op2); break;
+		case GREATER_THAN:
+			out = boolToInt(op1 > op2); break;
+		case LESS_THAN:
+			out = boolToInt(op1 < op2); break;
 		default:
 			assert false;
 		}
