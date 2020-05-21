@@ -43,7 +43,7 @@ public class ArrowLexer {
 			ArrowTokenType.NUMBER);
 	
 	private static final TokenSpec<ArrowTokenType> commentSpec = TyperSpec.of(
-			SequenceTokenSpec.of(
+			CombinerSpec.of(SequenceTokenSpec.of(
 					FixedStringTokenSpec.of("//"), 
 					RepeatedTokenSpec.of(
 							MultipleOptionTokenSpec.of(
@@ -51,7 +51,7 @@ public class ArrowLexer {
 									whiteSpaceSpec
 									),
 							false), 
-					FixedStringTokenSpec.of("\n")), ArrowTokenType.NEWLINE);
+					FixedStringTokenSpec.of("\n"))), ArrowTokenType.NEWLINE);
 	
 	private static final TokenSpec<ArrowTokenType> allowedWordSpec = MultipleOptionTokenSpec.of(commentSpec, keywordSpec, symbolSpec, numberSpec, identifierSpec, newLineSpec, whiteSpaceSpec);
 	private static final TokenSpec<ArrowTokenType> programSpec = RepeatedTokenSpec.of(allowedWordSpec, true);
