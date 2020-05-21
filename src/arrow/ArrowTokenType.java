@@ -2,7 +2,7 @@ package arrow;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,7 +54,7 @@ public enum ArrowTokenType {
 	private static final Map<ArrowTokenCategory, Set<ArrowTokenType>> tokensByCategory = new HashMap<>();
 	static {
 		for (ArrowTokenType type : values()) {
-			tokensByCategory.putIfAbsent(type.CATEGORY, new HashSet<>());
+			tokensByCategory.putIfAbsent(type.CATEGORY, new LinkedHashSet<>()); //we need the symbols to be added in the order that they're listed, which is why we're using a LinkedHashSet
 			tokensByCategory.get(type.CATEGORY).add(type);
 		}
 	}

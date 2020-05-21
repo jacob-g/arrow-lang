@@ -73,6 +73,10 @@ public class SymbolTableStack {
 		return newTable;
 	}
 	
+	public SymbolTable push() {
+		return push(top.table);
+	}
+	
 	public void pop() {
 		ChainedStackEntry removedEntry = top;
 		if (!removedEntry.predecessor.isPresent()) {

@@ -41,7 +41,7 @@ public class AssignmentDeclarationParser extends AbstractArrowParser {
 		} else if (representsVariable(tokens.get(0))) {
 			return parseAssignment(tokens);
 		} else {
-			return ParseResult.failure("Undeclared symbol for assignment", tokens);
+			return ParseResult.failure("Undeclared symbol for assignment: " + tokens.get(0).getContent(), tokens);
 		}
 	}
 	

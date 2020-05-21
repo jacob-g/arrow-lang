@@ -23,31 +23,25 @@ public class LineParser extends AbstractArrowParser {
 
 	@Override
 	public ParseResult<ArrowTokenType> parse(List<Token<ArrowTokenType>> tokens) {		
-		//first check indentation
-		ParseResult<ArrowTokenType> indentationResult = parseIndentation(tokens);
-		if (!indentationResult.getSuccess()) {
-			return indentationResult;
-		}
-		
 		assert !tokens.isEmpty();
 		
 		ParseResult<ArrowTokenType> lineParseResult;
 		switch (tokens.get(0).getType().CATEGORY) {
 		case IDENTIFIER:
-			lineParseResult = new AssignmentDeclarationParser(indentation, symbolTable).parse(indentationResult.getRemainder());
+			lineParseResult = new AssignmentDeclarationParser(indentation, symbolTable).parse(tokens);
 			break;
 		case KEYWORD:
-			lineParseResult = parseKeyword(indentationResult.getRemainder());
+			lineParseResult = parseKeyword(tokens);
 			break;
 		case NUMBER:
-			lineParseResult = ParseResult.failure("Unexpected number at the start of a line", indentationResult.getRemainder());
+			lineParseResult = ParseResult.failure("Unexpected number at the start of a line", tokens);
 			break;
 		case SYMBOL:
-			lineParseResult = ParseResult.failure("Unexpected symbol at the start of a line", indentationResult.getRemainder());
+			lineParseResult = parseSymbol(tokens);
 			break;
 		case NEWLINE:
 			//do nothing since we've reached the end of the line
-			lineParseResult = ParseResult.of(new EmptyParseTreeNode(), indentationResult.getRemainder());
+			lineParseResult = ParseResult.of(new EmptyParseTreeNode(), tokens);
 			break;
 		case IGNORE:
 			assert false : "ignored tokens not filtered out";
@@ -71,7 +65,19 @@ public class LineParser extends AbstractArrowParser {
 		return endOfLineResult.getSuccess() ? ParseResult.of(lineParseResult.getNode(), endOfLineResult.getRemainder()) : endOfLineResult;
 	}
 	
+	private ParseResult<ArrowTokenType> parseSymbol(List<Token<ArrowTokenType>> tokens) {
+		assert tokens != null && !tokens.isEmpty();
+		
+		switch (tokens.get(0).getType()) {
+		case START_IF:
+			return IfParser.of(indentation, symbolTable).parse(tokens);
+		default:
+			return ParseResult.failure("Unexpected token to start line: " + tokens.get(0).getType(), tokens);
+		}
+	}
+	
 	private ParseResult<ArrowTokenType> parseKeyword(List<Token<ArrowTokenType>> tokens) {
+		assert tokens != null && !tokens.isEmpty();
 		return null;
 	}
 }
