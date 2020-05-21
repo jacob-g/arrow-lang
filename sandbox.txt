@@ -1,7 +1,7 @@
 main
 int in
 
-in = 5
+in = 5 //set input here
 int result
 result = 1
 

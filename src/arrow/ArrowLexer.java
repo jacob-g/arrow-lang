@@ -42,7 +42,18 @@ public class ArrowLexer {
 			CombinerSpec.of(RepeatedTokenSpec.of(TokenSpec.getDigitSpec(), true)), 
 			ArrowTokenType.NUMBER);
 	
-	private static final TokenSpec<ArrowTokenType> allowedWordSpec = MultipleOptionTokenSpec.of(keywordSpec, symbolSpec, numberSpec, identifierSpec, newLineSpec, whiteSpaceSpec);
+	private static final TokenSpec<ArrowTokenType> commentSpec = TyperSpec.of(
+			SequenceTokenSpec.of(
+					FixedStringTokenSpec.of("//"), 
+					RepeatedTokenSpec.of(
+							MultipleOptionTokenSpec.of(
+									TokenSpec.getAlnumSpec(),
+									whiteSpaceSpec
+									),
+							false), 
+					FixedStringTokenSpec.of("\n")), ArrowTokenType.NEWLINE);
+	
+	private static final TokenSpec<ArrowTokenType> allowedWordSpec = MultipleOptionTokenSpec.of(commentSpec, keywordSpec, symbolSpec, numberSpec, identifierSpec, newLineSpec, whiteSpaceSpec);
 	private static final TokenSpec<ArrowTokenType> programSpec = RepeatedTokenSpec.of(allowedWordSpec, true);
 	
 	public static TokenLexResult<ArrowTokenType> parse(String program) {
