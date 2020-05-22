@@ -1,3 +1,12 @@
+function
+/--> int returnFive(int arg)
+| int a
+| a = 5
+| /--< a != 5
+| |
+| \-->
+^ 5
+
 main
 int in
 
