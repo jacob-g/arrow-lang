@@ -10,7 +10,6 @@ import memory.RuntimeDataStack;
 import parser.tree.ParseTreeAttributeType;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
-import symboltable.SymbolTableEntry;
 
 final class FunctionCallExecutor extends AbstractExecutor {
 

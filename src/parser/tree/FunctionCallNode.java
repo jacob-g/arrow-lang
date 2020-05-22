@@ -4,9 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import arrow.lexer.ArrowTokenType;
 import memory.MemoryEntry;
-import parser.ParseResult;
 import symboltable.SymbolTableEntry;
 import symboltable.SymbolTableEntryType;
 

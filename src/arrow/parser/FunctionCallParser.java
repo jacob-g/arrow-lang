@@ -8,7 +8,6 @@ import arrow.lexer.ArrowTokenType;
 import lexer.Token;
 import parser.ParseResult;
 import parser.tree.FunctionCallNode;
-import parser.tree.FunctionParseTreeNode;
 import parser.tree.ParseTreeAttributeType;
 import parser.tree.ParseTreeNode;
 import symboltable.StaticSymbolTableStack;

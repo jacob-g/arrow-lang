@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import memory.MemoryEntry;
 import symboltable.SymbolTableEntry;
-import symboltable.SymbolTableEntryType;
 
 public final class FunctionParseTreeNode extends AbstractParseTreeNode {
 	private final List<ParseTreeNode> body;

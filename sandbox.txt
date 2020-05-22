@@ -1,7 +1,19 @@
 function
-/--> bool isEven(int x)
-^ x % 2 == 0
+/--> bool isPrime(int x)
+| bool result
+| result = 1
+| /--< x < 3
+| | int counter
+| | counter = 2
+| | /-->
+| | | /--< x % counter != 0
+| | | | result = 0
+| | | \-->
+| | | counter = counter + 1
+| | \--< counter < x
+| \-->
+^ result
 
 main
-int y
-y = isEven(1)
+bool result
+result = isPrime(15)
