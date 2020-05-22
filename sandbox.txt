@@ -3,9 +3,9 @@ function
 | int a
 | a = 5
 | /--< a != 5
-| |
+| | a = a - 1
 | \-->
-^ 5
+^ a
 
 main
 int in

@@ -7,7 +7,7 @@ import java.util.Objects;
 import arrow.lexer.ArrowTokenType;
 import lexer.Token;
 import parser.ParseResult;
-import parser.tree.EmptyParseTreeNode;
+import parser.tree.ArgumentParseTreeNode;
 import parser.tree.FunctionParseTreeNode;
 import parser.tree.ParseTreeNode;
 import parser.tree.ReturnParseTreeNode;
@@ -155,7 +155,7 @@ final class ArrowFunctionParser extends AbstractArrowParser {
 			}
 		}
 		
-		return ParseResult.of(FunctionParseTreeNode.of(children, functionIdentifier), remainder);
+		return ParseResult.of(FunctionParseTreeNode.of(children, functionIdentifier, ArgumentParseTreeNode.of(argNodes)), remainder);
 	}
 
 	private ParseResult<ArrowTokenType> parseArgument(List<Token<ArrowTokenType>> tokens) {
