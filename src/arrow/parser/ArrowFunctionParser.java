@@ -155,7 +155,9 @@ final class ArrowFunctionParser extends AbstractArrowParser {
 			}
 		}
 		
-		return ParseResult.of(FunctionParseTreeNode.of(children, functionIdentifier, ArgumentParseTreeNode.of(argNodes)), remainder);
+		ParseTreeNode functionNode = FunctionParseTreeNode.of(children, ArgumentParseTreeNode.of(argNodes));
+		functionIdentifier.setPayload(functionNode);
+		return ParseResult.of(functionNode, remainder);
 	}
 
 	private ParseResult<ArrowTokenType> parseArgument(List<Token<ArrowTokenType>> tokens) {

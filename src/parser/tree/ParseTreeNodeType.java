@@ -16,6 +16,7 @@ public enum ParseTreeNodeType {
 	WHILE(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TEST))),
 	FUNCTION(new HashSet<>(Arrays.asList(ParseTreeAttributeType.ARGUMENTS, ParseTreeAttributeType.IDENTIFIER, ParseTreeAttributeType.TYPE))),
 	ARGUMENTS(new HashSet<>()),
+	FUNCTION_CALL(new HashSet<>(Arrays.asList(ParseTreeAttributeType.IDENTIFIER))),
 	DATA(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TYPE))),
 	ADD(new HashSet<>()),
 	SUBTRACT(new HashSet<>()),

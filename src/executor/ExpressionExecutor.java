@@ -38,6 +38,8 @@ class ExpressionExecutor extends AbstractExecutor {
 		case AND:
 		case OR:
 			return executeMathOperation(node);
+		case FUNCTION_CALL:
+			return FunctionCallExecutor.of(runtimeData).execute(node);
 		default:
 			assert false : "Invalid node type passed to expression executor";
 			return null;

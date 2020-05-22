@@ -10,31 +10,23 @@ import symboltable.SymbolTableEntryType;
 
 public final class FunctionParseTreeNode extends AbstractParseTreeNode {
 	private final List<ParseTreeNode> body;
-	private final SymbolTableEntry identifier;
 	
-	private FunctionParseTreeNode(List<ParseTreeNode> body, SymbolTableEntry identifier, ParseTreeNode arguments) {
+	private FunctionParseTreeNode(List<ParseTreeNode> body, ParseTreeNode arguments) {
 		assert body != null;
-		assert identifier != null && identifier.getType() == SymbolTableEntryType.FUNCTION;
 		assert arguments != null && arguments.getType() == ParseTreeNodeType.ARGUMENTS;
 		
 		this.body = body;
-		this.identifier = identifier;
 		setAttribute(ParseTreeAttributeType.ARGUMENTS, arguments);
 	}
 	
-	public static FunctionParseTreeNode of(List<ParseTreeNode> body, SymbolTableEntry identifier, ParseTreeNode arguments) {
+	public static FunctionParseTreeNode of(List<ParseTreeNode> body, ParseTreeNode arguments) {
 		Objects.requireNonNull(body);
-		Objects.requireNonNull(identifier);
-		
-		if (identifier.getType() != SymbolTableEntryType.FUNCTION) {
-			throw new IllegalArgumentException("Function identifier must be of type function");
-		}
-		
+
 		if (arguments.getType() != ParseTreeNodeType.ARGUMENTS) {
 			throw new IllegalArgumentException("Function arguments must be of arguments type");
 		}
 		
-		return new FunctionParseTreeNode(body, identifier, arguments);
+		return new FunctionParseTreeNode(body, arguments);
 	}
 	
 	@Override
@@ -49,9 +41,8 @@ public final class FunctionParseTreeNode extends AbstractParseTreeNode {
 
 	@Override
 	public SymbolTableEntry getIdentifier() {
-		assert identifier != null && identifier.getType() == SymbolTableEntryType.FUNCTION;
-		
-		return identifier;
+		assert false;
+		return null;
 	}
 
 	@Override

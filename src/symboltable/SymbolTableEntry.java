@@ -2,9 +2,12 @@ package symboltable;
 
 import java.util.Objects;
 
+import parser.tree.ParseTreeNode;
+
 public class SymbolTableEntry {
 	private final String identifier;
 	private final SymbolTableEntryType type;
+	private ParseTreeNode payload = null;
 
 	private SymbolTableEntry(String identifier, SymbolTableEntryType type) {
 		assert identifier != null;
@@ -31,5 +34,15 @@ public class SymbolTableEntry {
 	
 	public String toString() {
 		return getIdentifier();
+	}
+	
+	public void setPayload(ParseTreeNode payload) {
+		Objects.requireNonNull(payload);
+		
+		this.payload = payload;
+	}
+	
+	public ParseTreeNode getPayload() {
+		return payload;
 	}
 }

@@ -153,7 +153,7 @@ final class ExpressionParser extends AbstractArrowParser {
 		SymbolTableEntry variableEntry = symbolTable.lookup(identifier);
 		switch (variableEntry.getType()) {
 		case FUNCTION:
-			throw new UnsupportedOperationException("Not yet implemented");
+			return FunctionCallParser.of(indentation, symbolTable).parse(tokens);
 		case VARIABLE:
 			return ParseResult.of(VariableParseTreeNode.of(variableEntry), tokens.subList(1, tokens.size()));
 		default:

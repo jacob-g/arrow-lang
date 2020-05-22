@@ -1,34 +1,7 @@
 function
-/--> int returnFive(int arg)
-| int a
-| a = 5
-| /--< a != 5
-| | a = a - 1
-| \-->
-^ a
+/--> bool isEven(int x)
+^ x % 2 == 0
 
 main
-int in
-
-in = 5 //set input here
-
-int result
-result = 1
-
-/--< in < 3 //if the input is less than three then the loop won't work so just skip over it entirely
-| int counter
-| counter = 2
-| /--> //loop from 2 to (in-1)
-| | /--< in % counter != 0 //if the counter divides in, then in is not prime
-| | | result = 0
-| | \-->
-| | counter = counter + 1
-| \--< counter < in
-\-->
-
-/--< in != 2 //if the input is 2 then the number is prime
-| result = 1
-\-->
-
-bool isPrime
-isPrime = result
+int y
+y = isEven(1)

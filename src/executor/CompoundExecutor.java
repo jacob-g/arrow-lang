@@ -23,7 +23,7 @@ public class CompoundExecutor extends AbstractExecutor {
 	
 	@Override
 	public MemoryEntry execute(ParseTreeNode node) {
-		assert node.getType() == ParseTreeNodeType.COMPOUND || node.getType() == ParseTreeNodeType.IF || node.getType() == ParseTreeNodeType.LOOP;
+		assert node.getType() == ParseTreeNodeType.FUNCTION || node.getType() == ParseTreeNodeType.COMPOUND || node.getType() == ParseTreeNodeType.IF || node.getType() == ParseTreeNodeType.LOOP;
 
 		for (ParseTreeNode child : node.getChildren()) {
 			switch (child.getType()) {
@@ -39,6 +39,8 @@ public class CompoundExecutor extends AbstractExecutor {
 			case LOOP:
 				executeLoop(child);
 				break;
+			case RETURN:
+				return ExpressionExecutor.of(runtimeData).execute(child.getChildren().get(0));
 			case EMPTY:
 				//do nothing
 				break;
