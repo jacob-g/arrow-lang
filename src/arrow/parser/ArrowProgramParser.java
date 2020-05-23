@@ -46,7 +46,7 @@ public class ArrowProgramParser extends AbstractArrowParser {
 			case NEWLINE:
 				remainder = remainder.subList(1, remainder.size()); break;
 			case FUNCTION:
-				ParseResult<ArrowTokenType> functionParseResult = ArrowFunctionParser.of(indentation, symbolTable).parse(tokens);
+				ParseResult<ArrowTokenType> functionParseResult = FunctionDefinitionParser.of(indentation, symbolTable).parse(remainder);
 				if (!functionParseResult.getSuccess()) {
 					return functionParseResult;
 				}

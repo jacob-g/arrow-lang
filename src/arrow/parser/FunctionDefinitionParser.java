@@ -16,17 +16,17 @@ import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
 import symboltable.SymbolTableEntryType;
 
-final class ArrowFunctionParser extends AbstractArrowParser {
+final class FunctionDefinitionParser extends AbstractArrowParser {
 
-	private ArrowFunctionParser(int indentation, StaticSymbolTableStack symbolTable) {
+	private FunctionDefinitionParser(int indentation, StaticSymbolTableStack symbolTable) {
 		super(indentation, symbolTable);
 	}
 	
-	public static ArrowFunctionParser of(int indentation, StaticSymbolTableStack symbolTable) {
+	public static FunctionDefinitionParser of(int indentation, StaticSymbolTableStack symbolTable) {
 		Objects.requireNonNull(symbolTable);
 		requireNonNegative(indentation);
 		
-		return new ArrowFunctionParser(indentation, symbolTable);
+		return new FunctionDefinitionParser(indentation, symbolTable);
 	}
 
 	@Override
@@ -68,8 +68,8 @@ final class ArrowFunctionParser extends AbstractArrowParser {
 		if (nameToken.getType() != ArrowTokenType.IDENTIFIER) {
 			return ParseResult.failure("Illegal function name", remainder.subList(1, remainder.size()));
 		}
-		if (symbolTable.contains(nameToken.getContent())) {
-			return ParseResult.failure("Function name already defined", remainder);
+		if (symbolTable.contains(nameToken.getContent())) { //make sure we haven't already defined something under this name
+			return ParseResult.failure("Function name already defined: " + nameToken.getContent(), remainder);
 		}
 		SymbolTableEntry functionIdentifier = symbolTable.add(nameToken.getContent(), SymbolTableEntryType.FUNCTION, returnTypeEntry.getDataType());
 		
@@ -154,6 +154,8 @@ final class ArrowFunctionParser extends AbstractArrowParser {
 				return ParseResult.failure("Unexpected token type at start of line in function", remainder);
 			}
 		}
+		
+		symbolTable.pop();
 		
 		ParseTreeNode functionNode = FunctionParseTreeNode.of(children, ArgumentParseTreeNode.of(argNodes), returnTypeEntry.getDataType());
 		functionIdentifier.setPayload(functionNode);

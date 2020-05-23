@@ -79,7 +79,7 @@ final class FunctionCallParser extends AbstractArrowParser {
 		}
 		
 		if (argNodes.size() != functionIdentifier.getPayload().getAttribute(ParseTreeAttributeType.ARGUMENTS).getChildren().size()) {
-			return ParseResult.failure("Wrong argument count", remainder);
+			return ParseResult.failure("Wrong argument count", tokens);
 		}
 		
 		return ParseResult.of(FunctionCallNode.of(functionIdentifier, argNodes), remainder);

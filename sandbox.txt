@@ -1,19 +1,30 @@
+function 
+/--> int squareRoot(int x)
+| int candidate
+| candidate = 0
+| /-->
+| | candidate = candidate + 1
+| \--< candidate * candidate < x
+^ candidate
+
 function
 /--> bool isPrime(int x)
 | bool result
 | result = true
 | /--< x < 3
-| | int counter
-| | counter = 2
+| | int factor
+| | int ceiling
+| | ceiling = squareRoot(x)
+| | factor = 2
 | | /-->
-| | | /--< x % counter != 0
-| | | | result = false
+| | | /--< x % factor != 0
+| | | | result = false //if the factor divides 
 | | | \-->
-| | | counter = counter + 1
-| | \--< counter < x
+| | | factor = factor + 1
+| | \--< factor < ceiling and result //bail out as soon as we see a factor
 | \-->
 ^ result
 
 main
 bool result
-result = isPrime(15)
+result = isPrime(97)
