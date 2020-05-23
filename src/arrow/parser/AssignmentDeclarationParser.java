@@ -11,7 +11,6 @@ import parser.tree.VariableParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
 import symboltable.SymbolTableEntryType;
-import typesystem.ArrayType;
 import typesystem.Type;
 
 final class AssignmentDeclarationParser extends AbstractArrowParser {
@@ -55,34 +54,14 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 		}
 		
 		//get the data type
-		final String typeName = tokens.get(0).getContent();
-		Type varType = symbolTable.lookup(typeName).getDataType();
-		
-		List<Token<ArrowTokenType>> remainder = tokens.subList(1, tokens.size());
-		
-		//parse array subscripts
-		if (remainder.get(0).getType() == ArrowTokenType.OPEN_SUBSCRIPT) {
-			boolean moreSubscripts = true;
-			while (moreSubscripts) {
-				if (remainder.size() < 2) {
-					return ParseResult.failure("Unexpected end of data", remainder);
-				}
-
-				if (remainder.get(0).getType() == ArrowTokenType.OPEN_SUBSCRIPT) {
-					//we found a [] in the text, so nest the current type inside another array
-					if (remainder.get(1).getType() == ArrowTokenType.CLOSE_SUBSCRIPT) {
-						remainder = remainder.subList(2, remainder.size());
-						varType = ArrayType.of(varType);
-					} else {
-						return ParseResult.failure("Improperly formatted array declaration", remainder);
-					}
-				} else {
-					moreSubscripts = false;
-				}
-			}
-				
-			
+		ParseResult<ArrowTokenType> typeResult = TypeParser.of(indentation, symbolTable).parse(tokens);
+		if (!typeResult.getSuccess()) {
+			return typeResult;
 		}
+		
+		Type varType = typeResult.getNode().getDataType();
+		
+		List<Token<ArrowTokenType>> remainder = typeResult.getRemainder();
 		
 		//make sure we actually named the variable
 		if (remainder.get(0).getType() != ArrowTokenType.IDENTIFIER) {

@@ -15,6 +15,7 @@ import parser.tree.VariableParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
 import symboltable.SymbolTableEntryType;
+import typesystem.Type;
 
 final class FunctionDefinitionParser extends AbstractArrowParser {
 
@@ -50,33 +51,29 @@ final class FunctionDefinitionParser extends AbstractArrowParser {
 		}
 		remainder = beginCheckResult.getRemainder();
 		
-		//check that we have a type
-		Token<ArrowTokenType> typeToken = remainder.get(0);
-		if (typeToken.getType() != ArrowTokenType.IDENTIFIER) {
-			return ParseResult.failure("Missing return type for function", remainder);
-		}
-		if (!symbolTable.contains(typeToken.getContent())) {
-			return ParseResult.failure("Return type not defined for function", remainder);
-		}
-		SymbolTableEntry returnTypeEntry = symbolTable.lookup(typeToken.getContent());
-		if (returnTypeEntry.getType() != SymbolTableEntryType.TYPE) {
-			return ParseResult.failure("Return type is not a type", remainder);
+		//parse the return type
+		ParseResult<ArrowTokenType> typeResult = TypeParser.of(indentation, symbolTable).parse(remainder);
+		if (!typeResult.getSuccess()) {
+			return typeResult;
 		}
 		
+		remainder = typeResult.getRemainder();
+		Type returnType = typeResult.getNode().getDataType();
+		
 		//parse the name
-		Token<ArrowTokenType> nameToken = remainder.get(1);
+		Token<ArrowTokenType> nameToken = remainder.get(0);
 		if (nameToken.getType() != ArrowTokenType.IDENTIFIER) {
-			return ParseResult.failure("Illegal function name", remainder.subList(1, remainder.size()));
+			return ParseResult.failure("Illegal function name", remainder);
 		}
 		if (symbolTable.contains(nameToken.getContent())) { //make sure we haven't already defined something under this name
 			return ParseResult.failure("Function name already defined: " + nameToken.getContent(), remainder);
 		}
-		SymbolTableEntry functionIdentifier = symbolTable.add(nameToken.getContent(), SymbolTableEntryType.FUNCTION, returnTypeEntry.getDataType());
+		SymbolTableEntry functionIdentifier = symbolTable.add(nameToken.getContent(), SymbolTableEntryType.FUNCTION, returnType);
 		
 		//now read the arguments
 		symbolTable.push();
 		
-		remainder = remainder.subList(2, remainder.size());
+		remainder = remainder.subList(1, remainder.size());
 		ParseResult<ArrowTokenType> openParenResult = requireType(remainder, ArrowTokenType.OPEN_PAREN, 1);
 		if (!openParenResult.getSuccess()) {
 			return ParseResult.failure("Missing open parenthesis for function arguments", remainder);
@@ -144,14 +141,12 @@ final class FunctionDefinitionParser extends AbstractArrowParser {
 				if (!returnResult.getSuccess()) {
 					return returnResult;
 				}
-				if (!returnResult.getNode().getDataType().canBeAssignedTo(returnTypeEntry.getDataType())) {
+				if (!returnResult.getNode().getDataType().canBeAssignedTo(returnType)) {
 					return ParseResult.failure("Incompatible return type to function", remainder);
 				}
 				remainder = returnResult.getRemainder();
 				children.add(ReturnParseTreeNode.of(returnResult.getNode()));
 				moreBody = false;
-				
-				//TODO: find a way to put this together in the return
 				break;
 			default:
 				return ParseResult.failure("Unexpected token type at start of line in function", remainder);
@@ -160,7 +155,7 @@ final class FunctionDefinitionParser extends AbstractArrowParser {
 		
 		symbolTable.pop();
 		
-		ParseTreeNode functionNode = FunctionParseTreeNode.of(children, ArgumentParseTreeNode.of(argNodes), returnTypeEntry.getDataType());
+		ParseTreeNode functionNode = FunctionParseTreeNode.of(children, ArgumentParseTreeNode.of(argNodes), returnType);
 		functionIdentifier.setPayload(functionNode);
 		return ParseResult.of(functionNode, remainder);
 	}
@@ -171,33 +166,30 @@ final class FunctionDefinitionParser extends AbstractArrowParser {
 		if (remainder.size() < 3) {
 			return ParseResult.failure("Not enough data given to function argument", remainder);
 		}
-		
-		Token<ArrowTokenType> firstToken = tokens.get(0);
-		
+				
 		//make sure the type given is actually a type
-		if (!symbolTable.contains(firstToken.getContent())) {
-			return ParseResult.failure("Undefined type for function argument", remainder);
+		ParseResult<ArrowTokenType> typeResult = TypeParser.of(indentation, symbolTable).parse(tokens);
+		if (!typeResult.getSuccess()) {
+			return typeResult;
 		}
-		SymbolTableEntry argTypeEntry = symbolTable.lookup(firstToken.getContent());
-		if (argTypeEntry.getType() != SymbolTableEntryType.TYPE) {
-			return ParseResult.failure("Argument type given not actually a type", remainder);
-		}
+		Type argType = typeResult.getNode().getDataType();
+		remainder = typeResult.getRemainder();
 		
 		//make sure a non-previously-defined variable name is given as an argument
-		Token<ArrowTokenType> argNameToken = remainder.get(1);
+		Token<ArrowTokenType> argNameToken = remainder.get(0);
 		if (argNameToken.getType() != ArrowTokenType.IDENTIFIER) {
 			return ParseResult.failure("Name not given for function argument", remainder);
 		}
 		if (symbolTable.contains(argNameToken.getContent())) {
 			return ParseResult.failure("Function argument name already defined: " + argNameToken.getContent(), remainder);
 		}
-		SymbolTableEntry argEntry = symbolTable.add(argNameToken.getContent(), SymbolTableEntryType.VARIABLE, argTypeEntry.getDataType());
+		SymbolTableEntry argEntry = symbolTable.add(argNameToken.getContent(), SymbolTableEntryType.VARIABLE, argType);
 		
 		//if it ends with a comma, consume it
-		if (remainder.get(2).getType() == ArrowTokenType.COMMA) {
-			remainder = remainder.subList(3, remainder.size());
-		} else {
+		if (remainder.get(1).getType() == ArrowTokenType.COMMA) {
 			remainder = remainder.subList(2, remainder.size());
+		} else {
+			remainder = remainder.subList(1, remainder.size());
 		}
 		
 		return ParseResult.of(VariableParseTreeNode.of(argEntry), remainder);
