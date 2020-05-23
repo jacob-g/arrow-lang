@@ -11,6 +11,7 @@ import parser.tree.ControlParseTreeNode;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
 import symboltable.StaticSymbolTableStack;
+import typesystem.BoolType;
 
 final class IfParser extends AbstractArrowParser {
 
@@ -34,6 +35,9 @@ final class IfParser extends AbstractArrowParser {
 		ParseResult<ArrowTokenType> conditionResult = ExpressionParser.of(indentation, symbolTable).parse(tokens.subList(1, tokens.size()));
 		if (!conditionResult.getSuccess()) {
 			return conditionResult;
+		}
+		if (conditionResult.getNode().getDataType() != BoolType.getInstance()) {
+			return ParseResult.failure("If condition must be a boolean", tokens);
 		}
 		
 		ParseTreeNode conditionNode = conditionResult.getNode();

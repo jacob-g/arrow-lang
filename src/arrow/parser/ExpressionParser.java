@@ -19,6 +19,7 @@ import parser.tree.ParseTreeNodeType;
 import parser.tree.VariableParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
+import typesystem.BoolType;
 import typesystem.IntegerType;
 
 final class ExpressionParser extends AbstractArrowParser {
@@ -112,11 +113,15 @@ final class ExpressionParser extends AbstractArrowParser {
 			return parseNumber(tokens);
 		case OPEN_PAREN:
 			return parseParenthesized(tokens);
+		case TRUE:
+			return ParseResult.of(DataParseTreeNode.of(BoolType.getTrue()), tokens.subList(1, tokens.size()));
+		case FALSE:
+			return ParseResult.of(DataParseTreeNode.of(BoolType.getFalse()), tokens.subList(1, tokens.size()));
 		default:
 			return ParseResult.failure("Unexpected symbol in expression: " + tokens.get(0).getContent(), tokens);
 		}
 	}
-	
+
 	private ParseResult<ArrowTokenType> parseParenthesized(List<Token<ArrowTokenType>> tokens) {
 		ParseResult<ArrowTokenType> openParenResult = requireType(tokens, ArrowTokenType.OPEN_PAREN, 1);
 		if (!openParenResult.getSuccess()) {

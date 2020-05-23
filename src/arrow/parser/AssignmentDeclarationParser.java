@@ -81,6 +81,7 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 			return ParseResult.failure("Missing variable name in assignment", tokens);
 		}
 		
+		//find the variable and make sure it's declared
 		final String identifier = tokens.get(0).getContent();
 		if (!symbolTable.contains(identifier)) {
 			return ParseResult.failure("Assignment undeclared variable: " + identifier, tokens);
@@ -91,16 +92,25 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 			return ParseResult.failure("Incorrect symbol type in assignment: " + varEntry.getType() + " for " + identifier, tokens);
 		}
 				
+		//consume the equal sign
 		ParseResult<ArrowTokenType> equalParseResult = requireType(tokens.subList(1, tokens.size()), ArrowTokenType.SINGLE_EQUAL, 1);
 		if (!equalParseResult.getSuccess()){
 			return equalParseResult;
 		}
 		
+		//parse the value
 		ParseResult<ArrowTokenType> valueResult = ExpressionParser.of(indentation, symbolTable).parse(equalParseResult.getRemainder());
 		if (!valueResult.getSuccess()) {
 			return valueResult;
 		}
 		
+		//make sure the types are compatible
+		Type valueType = valueResult.getNode().getDataType();
+		if (varEntry.getDataType() != valueType) {
+			return ParseResult.failure("Incompatible types for assignment: assigning " + valueType + " to variable of type " + varEntry.getDataType(), tokens);
+		}
+		
+		//actually put the thing together
 		VariableParseTreeNode varNode = VariableParseTreeNode.of(varEntry);
 		AssignmentParseTreeNode assignNode = AssignmentParseTreeNode.of(varNode, valueResult.getNode());
 		

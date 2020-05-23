@@ -5,10 +5,19 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import memory.MemoryEntry;
 import parser.tree.ParseTreeNodeType;
 
 public final class BoolType implements Type {
 	private static final Set<ParseTreeNodeType> allowedBinaryOperations = new HashSet<>(Arrays.asList(ParseTreeNodeType.AND, ParseTreeNodeType.OR));
+	
+	public static MemoryEntry getTrue() {
+		return MemoryEntry.initialized(1, getInstance());
+	}
+	
+	public static MemoryEntry getFalse() {
+		return MemoryEntry.initialized(0, getInstance());
+	}
 	
 	private BoolType() {
 		

@@ -1,13 +1,13 @@
 function
 /--> bool isPrime(int x)
 | bool result
-| result = 1
+| result = true
 | /--< x < 3
 | | int counter
 | | counter = 2
 | | /-->
 | | | /--< x % counter != 0
-| | | | result = 0
+| | | | result = false
 | | | \-->
 | | | counter = counter + 1
 | | \--< counter < x

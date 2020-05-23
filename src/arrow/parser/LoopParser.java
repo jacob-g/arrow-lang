@@ -11,6 +11,7 @@ import parser.tree.ControlParseTreeNode;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
 import symboltable.StaticSymbolTableStack;
+import typesystem.BoolType;
 
 final class LoopParser extends AbstractArrowParser {
 
@@ -82,6 +83,9 @@ final class LoopParser extends AbstractArrowParser {
 		ParseResult<ArrowTokenType> conditionResult = ExpressionParser.of(indentation, symbolTable).parse(remainder);
 		if (!conditionResult.getSuccess()) {
 			return conditionResult;
+		}
+		if (conditionResult.getNode().getDataType() != BoolType.getInstance()) {
+			return ParseResult.failure("Loop termination condition must be a boolean", remainder);
 		}
 		
 		ParseTreeNode conditionNode = conditionResult.getNode();

@@ -11,6 +11,8 @@ public enum ArrowTokenType {
 	
 	FUNCTION(ArrowTokenCategory.KEYWORD),
 	MAIN(ArrowTokenCategory.KEYWORD),
+	TRUE(ArrowTokenCategory.KEYWORD),
+	FALSE(ArrowTokenCategory.KEYWORD),
 	NUMBER(ArrowTokenCategory.NUMBER),
 	
 	//control flow symbols
