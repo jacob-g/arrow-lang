@@ -60,7 +60,7 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 		final String identifier = tokens.get(1).getContent();
 		
 		if (symbolTable.contains(identifier)) {
-			return ParseResult.failure("Redefining previously defined identifier", tokens);
+			return ParseResult.failure("Redefining previously defined identifier: " + identifier, tokens);
 		}
 		
 		Type varType = symbolTable.lookup(tokens.get(0).getContent()).getDataType();

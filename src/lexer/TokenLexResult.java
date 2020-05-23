@@ -54,9 +54,10 @@ public final class TokenLexResult<T> {
 		return remainder;
 	}
 	
+	private static final int MAX_ERROR_LOCATION_LENGTH = 20;
 	public String toString() {
 		return getSuccess() 
 				? results.get().stream().map(token -> token.toString()).collect(Collectors.joining(",", "[", "]")) + (getRemainder().isEmpty() ? "" : "\n" + "Remainder: " + getRemainder()) 
-				: "<<<LEXER FAILURE>>>\nPoint: " + remainder.substring(0, Math.min(20, remainder.length()));
+				: "<<<LEXER FAILURE>>>\nPoint: " + remainder.substring(0, Math.min(MAX_ERROR_LOCATION_LENGTH, remainder.length()));
 	}
 }

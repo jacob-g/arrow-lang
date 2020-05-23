@@ -74,6 +74,8 @@ final class ArrowFunctionParser extends AbstractArrowParser {
 		SymbolTableEntry functionIdentifier = symbolTable.add(nameToken.getContent(), SymbolTableEntryType.FUNCTION, returnTypeEntry.getDataType());
 		
 		//now read the arguments
+		symbolTable.push();
+		
 		remainder = remainder.subList(2, remainder.size());
 		ParseResult<ArrowTokenType> openParenResult = requireType(remainder, ArrowTokenType.OPEN_PAREN, 1);
 		if (!openParenResult.getSuccess()) {
@@ -115,9 +117,7 @@ final class ArrowFunctionParser extends AbstractArrowParser {
 		}
 		remainder = remainder.subList(1, remainder.size());
 		
-		//parse the body
-		symbolTable.push();
-		
+		//now parse the body
 		List<ParseTreeNode> children = new LinkedList<>();
 		
 		boolean moreBody = true;

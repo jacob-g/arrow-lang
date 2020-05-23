@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import lexer.Token;
 import parser.tree.ParseTreeNode;
@@ -70,7 +71,10 @@ public class ParseResult<T> {
 		return node.get();
 	}
 	
+	private static final long MAX_ERROR_TOKENS = 10;
 	public String toString() {
-		return getSuccess() ? "Successful parse, root node type: " + node.get().getType() : "Parse failed, reason: " + getFailureMessage();
+		return getSuccess() 
+				? "Successful parse, root node type: " + node.get().getType() 
+				: "Parse failed, reason: " + getFailureMessage() + "\nLocation: " + remainder.stream().limit(MAX_ERROR_TOKENS).map(token -> token.getContent()).collect(Collectors.joining(" "));
 	}
 }
