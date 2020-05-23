@@ -1,5 +1,6 @@
 package typesystem;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import parser.tree.ParseTreeNodeType;
@@ -9,6 +10,11 @@ public final class ArrayType implements Type {
 	
 	private ArrayType(Type underlyingType) {
 		this.underlyingType = underlyingType;
+	}
+	
+	public static ArrayType of(Type underlyingType) {
+		Objects.requireNonNull(underlyingType);
+		return new ArrayType(underlyingType);
 	}
 	
 	@Override
@@ -28,8 +34,12 @@ public final class ArrayType implements Type {
 
 	@Override
 	public Type getUnderlyingType() {
-		// TODO Auto-generated method stub
 		return underlyingType;
+	}
+
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return other.isArrayType() && getUnderlyingType().canBeAssignedTo(other.getUnderlyingType());
 	}
 
 }

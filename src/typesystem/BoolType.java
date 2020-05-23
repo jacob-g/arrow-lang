@@ -53,4 +53,9 @@ public final class BoolType implements Type {
 		assert false;
 		return null;
 	}
+	
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return other == BoolType.getInstance();
+	}
 }

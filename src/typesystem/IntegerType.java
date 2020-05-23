@@ -57,4 +57,9 @@ public final class IntegerType implements Type {
 		assert false;
 		return null;
 	}
+
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return other == IntegerType.getInstance();
+	}
 }

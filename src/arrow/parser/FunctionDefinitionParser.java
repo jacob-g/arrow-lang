@@ -144,6 +144,9 @@ final class FunctionDefinitionParser extends AbstractArrowParser {
 				if (!returnResult.getSuccess()) {
 					return returnResult;
 				}
+				if (!returnResult.getNode().getDataType().canBeAssignedTo(returnTypeEntry.getDataType())) {
+					return ParseResult.failure("Incompatible return type to function", remainder);
+				}
 				remainder = returnResult.getRemainder();
 				children.add(ReturnParseTreeNode.of(returnResult.getNode()));
 				moreBody = false;

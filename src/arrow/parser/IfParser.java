@@ -36,7 +36,8 @@ final class IfParser extends AbstractArrowParser {
 		if (!conditionResult.getSuccess()) {
 			return conditionResult;
 		}
-		if (conditionResult.getNode().getDataType() != BoolType.getInstance()) {
+		//make sure the condition is actually a boolean
+		if (!conditionResult.getNode().getDataType().canBeAssignedTo(BoolType.getInstance())) {
 			return ParseResult.failure("If condition must be a boolean", tokens);
 		}
 		

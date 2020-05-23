@@ -21,7 +21,7 @@ class LoopExecutor extends AbstractExecutor {
 
 	@Override
 	public MemoryEntry execute(ParseTreeNode node) {
-		assert node.getType() == ParseTreeNodeType.IF;
+		assert node.getType() == ParseTreeNodeType.LOOP;
 		
 		MemoryEntry testValue;
 		do {

@@ -11,6 +11,7 @@ import parser.tree.VariableParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
 import symboltable.SymbolTableEntryType;
+import typesystem.ArrayType;
 import typesystem.Type;
 
 final class AssignmentDeclarationParser extends AbstractArrowParser {
@@ -48,26 +49,56 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 	
 	private ParseResult<ArrowTokenType> parseDeclaration(List<Token<ArrowTokenType>> tokens) {
 		assert !tokens.isEmpty() && representsType(tokens.get(0));
-				
+		
 		if (tokens.size() < 2) {
 			return ParseResult.failure("Improperly formatted declaration", tokens);
 		}
 		
-		if (tokens.get(1).getType() != ArrowTokenType.IDENTIFIER) {
+		//get the data type
+		final String typeName = tokens.get(0).getContent();
+		Type varType = symbolTable.lookup(typeName).getDataType();
+		
+		List<Token<ArrowTokenType>> remainder = tokens.subList(1, tokens.size());
+		
+		//parse array subscripts
+		if (remainder.get(0).getType() == ArrowTokenType.OPEN_SUBSCRIPT) {
+			boolean moreSubscripts = true;
+			while (moreSubscripts) {
+				if (remainder.size() < 2) {
+					return ParseResult.failure("Unexpected end of data", remainder);
+				}
+
+				if (remainder.get(0).getType() == ArrowTokenType.OPEN_SUBSCRIPT) {
+					//we found a [] in the text, so nest the current type inside another array
+					if (remainder.get(1).getType() == ArrowTokenType.CLOSE_SUBSCRIPT) {
+						remainder = remainder.subList(2, remainder.size());
+						varType = ArrayType.of(varType);
+					} else {
+						return ParseResult.failure("Improperly formatted array declaration", remainder);
+					}
+				} else {
+					moreSubscripts = false;
+				}
+			}
+				
+			
+		}
+		
+		//make sure we actually named the variable
+		if (remainder.get(0).getType() != ArrowTokenType.IDENTIFIER) {
 			return ParseResult.failure("Missing variable name in declaration", tokens);
 		}
 		
-		final String identifier = tokens.get(1).getContent();
+		//now actually enter the variable into the symbol table
+		final String varName = remainder.get(0).getContent();
 		
-		if (symbolTable.contains(identifier)) {
-			return ParseResult.failure("Redefining previously defined identifier: " + identifier, tokens);
+		if (symbolTable.contains(varName)) {
+			return ParseResult.failure("Redefining previously defined identifier: " + varName, tokens);
 		}
 		
-		Type varType = symbolTable.lookup(tokens.get(0).getContent()).getDataType();
+		VariableParseTreeNode varNode = VariableParseTreeNode.of(symbolTable.add(varName, SymbolTableEntryType.VARIABLE, varType));
 		
-		VariableParseTreeNode varNode = VariableParseTreeNode.of(symbolTable.add(identifier, SymbolTableEntryType.VARIABLE, varType));
-		
-		return ParseResult.of(DeclarationParseTreeNode.of(varNode), tokens.subList(2, tokens.size()));
+		return ParseResult.of(DeclarationParseTreeNode.of(varNode), remainder.subList(1, remainder.size()));
 	}
 
 	private ParseResult<ArrowTokenType> parseAssignment(List<Token<ArrowTokenType>> tokens) {
@@ -106,7 +137,7 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 		
 		//make sure the types are compatible
 		Type valueType = valueResult.getNode().getDataType();
-		if (varEntry.getDataType() != valueType) {
+		if (!varEntry.getDataType().canBeAssignedTo(valueType)) {
 			return ParseResult.failure("Incompatible types for assignment: assigning " + valueType + " to variable of type " + varEntry.getDataType(), tokens);
 		}
 		

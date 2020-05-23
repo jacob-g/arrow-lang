@@ -68,7 +68,6 @@ final class LoopParser extends AbstractArrowParser {
 				children.add(nextResult.getNode());
 				remainder = nextResult.getRemainder();
 				break;
-			
 			case END_DO_WHILE:
 				//for an end-if, we're done with the if, so bail out
 				symbolTable.pop();
@@ -84,7 +83,8 @@ final class LoopParser extends AbstractArrowParser {
 		if (!conditionResult.getSuccess()) {
 			return conditionResult;
 		}
-		if (conditionResult.getNode().getDataType() != BoolType.getInstance()) {
+		//make sure the termination condition is actually a boolean
+		if (!conditionResult.getNode().getDataType().canBeAssignedTo(BoolType.getInstance())) {
 			return ParseResult.failure("Loop termination condition must be a boolean", remainder);
 		}
 		

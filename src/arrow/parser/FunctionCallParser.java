@@ -93,7 +93,7 @@ final class FunctionCallParser extends AbstractArrowParser {
 			Type lastFormalParamType = formalParamTypeIterator.next();
 			Type lastActualParamType = actualParamTypeIterator.next();
 			
-			if (lastFormalParamType != lastActualParamType) {
+			if (!lastFormalParamType.canBeAssignedTo(lastActualParamType)) {
 				return ParseResult.failure("Incompatible types in function call, expected " + lastFormalParamType + " found " + lastActualParamType, remainder);
 			}
 		}

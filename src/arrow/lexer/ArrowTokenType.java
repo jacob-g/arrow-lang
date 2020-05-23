@@ -40,6 +40,8 @@ public enum ArrowTokenType {
 	SINGLE_EQUAL(ArrowTokenCategory.SYMBOL, "="),
 	OPEN_PAREN(ArrowTokenCategory.SYMBOL, "("),
 	CLOSE_PAREN(ArrowTokenCategory.SYMBOL, ")"),
+	OPEN_SUBSCRIPT(ArrowTokenCategory.SYMBOL, "["),
+	CLOSE_SUBSCRIPT(ArrowTokenCategory.SYMBOL, "]"),
 	
 	NEWLINE(ArrowTokenCategory.NEWLINE),
 	WHITESPACE(ArrowTokenCategory.IGNORE);
