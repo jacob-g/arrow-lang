@@ -39,7 +39,7 @@ final class ExpressionParser extends AbstractArrowParser {
 	private static final Set<ArrowTokenType> MULT_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.TIMES, ArrowTokenType.DIVIDE, ArrowTokenType.MODULO));
 	private static final Set<ArrowTokenType> RELATIONAL_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.GREATER_THAN, ArrowTokenType.LESS_THAN, ArrowTokenType.DOUBLE_EQUAL, ArrowTokenType.NOT_EQUAL));
 	private static final Set<ArrowTokenType> BOOLEAN_BINARY_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.AND, ArrowTokenType.OR));
-	private static final Set<ArrowTokenType> BOOLEAN_UNARY_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.NOT));
+	private static final Set<ArrowTokenType> UNARY_OPERATORS = new HashSet<>(Arrays.asList(ArrowTokenType.NOT, ArrowTokenType.MINUS));
 	
 	private static final Map<ArrowTokenType, ParseTreeNodeType> operations = new HashMap<>();
 	static {
@@ -54,6 +54,12 @@ final class ExpressionParser extends AbstractArrowParser {
 		operations.put(ArrowTokenType.NOT_EQUAL, ParseTreeNodeType.NOT_EQUAL);
 		operations.put(ArrowTokenType.AND, ParseTreeNodeType.AND);
 		operations.put(ArrowTokenType.OR, ParseTreeNodeType.OR);
+	}
+	
+	private static final Map<ArrowTokenType, ParseTreeNodeType> unaryOperations = new HashMap<>();
+	static {
+		unaryOperations.put(ArrowTokenType.MINUS, ParseTreeNodeType.NEGATE);
+		unaryOperations.put(ArrowTokenType.NOT, ParseTreeNodeType.NOT);
 	}
 	
 	@Override
@@ -106,6 +112,10 @@ final class ExpressionParser extends AbstractArrowParser {
 			return ParseResult.failure("Unexpected end of data", tokens);
 		}
 		
+		if (UNARY_OPERATORS.contains(tokens.get(0).getType())) {
+			return parseUnary(tokens);
+		}
+		
 		switch (tokens.get(0).getType()) {
 		case IDENTIFIER:
 			return parseIdentifier(tokens);
@@ -120,6 +130,27 @@ final class ExpressionParser extends AbstractArrowParser {
 		default:
 			return ParseResult.failure("Unexpected symbol in expression: " + tokens.get(0).getContent(), tokens);
 		}
+	}
+	
+	private ParseResult<ArrowTokenType> parseUnary(List<Token<ArrowTokenType>> tokens) {
+		assert !tokens.isEmpty() && UNARY_OPERATORS.contains(tokens.get(0).getType());
+		
+		if (tokens.size() < 2) {
+			return ParseResult.failure("Unexpected end of data", tokens);
+		}
+		
+		ParseResult<ArrowTokenType> operandResult = parseAddend(tokens.subList(1, tokens.size()));
+		if (!operandResult.getSuccess()) {
+			return operandResult;
+		}
+		
+		ParseTreeNodeType operation = unaryOperations.get(tokens.get(0).getType());
+		
+		if (!operandResult.getNode().getDataType().unaryOperationResult(operation).isPresent()) {
+			return ParseResult.failure("Invalid unary operation " + operation + " on " + operandResult.getNode().getDataType(), tokens);
+		}
+		
+		return ParseResult.of(MathOperationTreeNode.of(operation, operandResult.getNode()), operandResult.getRemainder());
 	}
 
 	private ParseResult<ArrowTokenType> parseParenthesized(List<Token<ArrowTokenType>> tokens) {

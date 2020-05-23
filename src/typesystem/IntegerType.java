@@ -40,11 +40,21 @@ public final class IntegerType implements Type {
 
 	@Override
 	public Optional<Type> unaryOperationResult(ParseTreeNodeType operation) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		return operation == ParseTreeNodeType.NEGATE ? Optional.of(getInstance()) : Optional.empty();
 	}
 
 	public String toString() {
 		return "int";
+	}
+
+	@Override
+	public boolean isArrayType() {
+		return false;
+	}
+
+	@Override
+	public Type getUnderlyingType() {
+		assert false;
+		return null;
 	}
 }

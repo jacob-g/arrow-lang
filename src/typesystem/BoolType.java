@@ -36,10 +36,21 @@ public final class BoolType implements Type {
 
 	@Override
 	public Optional<Type> unaryOperationResult(ParseTreeNodeType operation) {
-		return Optional.empty();
+		return operation == ParseTreeNodeType.NOT ? Optional.of(getInstance()) : Optional.empty();
 	}
 	
 	public String toString() {
 		return "bool";
+	}
+
+	@Override
+	public boolean isArrayType() {
+		return false;
+	}
+
+	@Override
+	public Type getUnderlyingType() {
+		assert false;
+		return null;
 	}
 }

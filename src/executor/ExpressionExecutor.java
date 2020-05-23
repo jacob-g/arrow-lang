@@ -37,7 +37,10 @@ class ExpressionExecutor extends AbstractExecutor {
 		case LESS_THAN:
 		case AND:
 		case OR:
-			return executeMathOperation(node);
+			return executeBinaryMathOperation(node);
+		case NOT:
+		case NEGATE:
+			return executeUnaryMathOperation(node);
 		case FUNCTION_CALL:
 			return FunctionCallExecutor.of(runtimeData).execute(node);
 		default:
@@ -50,7 +53,7 @@ class ExpressionExecutor extends AbstractExecutor {
 		return x ? 1 : 0;
 	}
 	
-	private MemoryEntry executeMathOperation(ParseTreeNode node) {
+	private MemoryEntry executeBinaryMathOperation(ParseTreeNode node) {
 		assert node.getChildren().size() == 2;
 		
 		MemoryEntry firstOperand = execute(node.getChildren().get(0));
@@ -89,6 +92,32 @@ class ExpressionExecutor extends AbstractExecutor {
 			out = boolToInt(op1 != 0 && op2 != 0); break;
 		case OR:
 			out = boolToInt(op1 != 0 || op2 != 0); break;
+		default:
+			assert false;
+		}
+		
+		return MemoryEntry.initialized(out, node.getDataType());
+	}
+	
+	private MemoryEntry executeUnaryMathOperation(ParseTreeNode node) {
+		assert node.getChildren().size() == 1;
+		
+		MemoryEntry operand = execute(node.getChildren().get(0));
+		
+		if (!operand.isInitialized()) {
+			//TODO: establish architecture for runtime errors
+			throw new IllegalStateException("Working with undefined variables");
+		}
+		
+		int op1 = operand.getValue();
+		
+		int out = 0;
+				
+		switch (node.getType()) {
+		case NOT:
+			out = op1 == 0 ? 1 : 0; break;
+		case NEGATE:
+			out = -op1; break;
 		default:
 			assert false;
 		}

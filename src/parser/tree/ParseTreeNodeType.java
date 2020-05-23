@@ -18,6 +18,7 @@ public enum ParseTreeNodeType {
 	ARGUMENTS(new HashSet<>()),
 	FUNCTION_CALL(new HashSet<>(Arrays.asList(ParseTreeAttributeType.IDENTIFIER))),
 	DATA(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TYPE))),
+	NEGATE(new HashSet<>()),
 	ADD(new HashSet<>()),
 	SUBTRACT(new HashSet<>()),
 	MULTIPLY(new HashSet<>()),
@@ -29,6 +30,7 @@ public enum ParseTreeNodeType {
 	NOT_EQUAL(new HashSet<>()),
 	AND(new HashSet<>()),
 	OR(new HashSet<>()),
+	NOT(new HashSet<>()),
 	RETURN(new HashSet<>()),
 	VARIABLE(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TYPE)));
 	

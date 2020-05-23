@@ -46,8 +46,7 @@ public class DeclarationParseTreeNode extends AbstractParseTreeNode {
 
 	@Override
 	public Type getDataType() {
-		assert false;
-		return null;
+		return getAttribute(ParseTreeAttributeType.IDENTIFIER).getDataType();
 	}
 
 }
