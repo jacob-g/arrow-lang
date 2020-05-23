@@ -4,6 +4,7 @@ import java.util.List;
 
 import memory.MemoryEntry;
 import symboltable.SymbolTableEntry;
+import typesystem.Type;
 
 public interface ParseTreeNode {
 	ParseTreeNode getAttribute(ParseTreeAttributeType type);
@@ -11,4 +12,5 @@ public interface ParseTreeNode {
 	ParseTreeNodeType getType();
 	SymbolTableEntry getIdentifier();
 	MemoryEntry getData();
+	Type getDataType();
 }

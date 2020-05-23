@@ -8,6 +8,7 @@ import java.util.Set;
 
 import memory.MemoryEntry;
 import symboltable.SymbolTableEntry;
+import typesystem.Type;
 
 public class MathOperationTreeNode extends AbstractParseTreeNode {
 	private final ParseTreeNodeType operation;
@@ -70,5 +71,10 @@ public class MathOperationTreeNode extends AbstractParseTreeNode {
 	public MemoryEntry getData() {
 		assert false;
 		return null;
+	}
+
+	@Override
+	public Type getDataType() {
+		return firstOperand.getDataType().binaryOperationResult(operation, secondOperand.getDataType()).get();
 	}
 }

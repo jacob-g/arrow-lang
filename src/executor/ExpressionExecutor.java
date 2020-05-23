@@ -93,7 +93,7 @@ class ExpressionExecutor extends AbstractExecutor {
 			assert false;
 		}
 		
-		return new MemoryEntry(out);
+		return MemoryEntry.initialized(out, node.getDataType());
 	}
 
 	private MemoryEntry executeVariable(ParseTreeNode node) {

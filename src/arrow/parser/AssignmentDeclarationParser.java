@@ -11,6 +11,7 @@ import parser.tree.VariableParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
 import symboltable.SymbolTableEntryType;
+import typesystem.Type;
 
 final class AssignmentDeclarationParser extends AbstractArrowParser {
 
@@ -62,7 +63,9 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 			return ParseResult.failure("Redefining previously defined identifier", tokens);
 		}
 		
-		VariableParseTreeNode varNode = VariableParseTreeNode.of(symbolTable.add(identifier, SymbolTableEntryType.VARIABLE));
+		Type varType = symbolTable.lookup(tokens.get(0).getContent()).getDataType();
+		
+		VariableParseTreeNode varNode = VariableParseTreeNode.of(symbolTable.add(identifier, SymbolTableEntryType.VARIABLE, varType));
 		
 		return ParseResult.of(DeclarationParseTreeNode.of(varNode), tokens.subList(2, tokens.size()));
 	}

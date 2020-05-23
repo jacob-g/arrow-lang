@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import memory.MemoryEntry;
 import symboltable.SymbolTableEntry;
+import typesystem.Type;
 
 public final class ArgumentParseTreeNode extends AbstractParseTreeNode {
 	private final List<ParseTreeNode> arguments;
@@ -45,6 +46,12 @@ public final class ArgumentParseTreeNode extends AbstractParseTreeNode {
 
 	@Override
 	public MemoryEntry getData() {
+		assert false;
+		return null;
+	}
+
+	@Override
+	public Type getDataType() {
 		assert false;
 		return null;
 	}

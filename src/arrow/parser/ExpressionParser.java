@@ -19,6 +19,7 @@ import parser.tree.ParseTreeNodeType;
 import parser.tree.VariableParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
+import typesystem.IntegerType;
 
 final class ExpressionParser extends AbstractArrowParser {
 
@@ -88,6 +89,11 @@ final class ExpressionParser extends AbstractArrowParser {
 				return secondOperandResult;
 			}
 			
+			//type checking
+			if (!overallResult.getNode().getDataType().binaryOperationResult(operation, secondOperandResult.getNode().getDataType()).isPresent()) {
+				return ParseResult.failure("Incompatible types: " + overallResult.getNode().getDataType() + " " + operation + " " + secondOperandResult.getNode().getDataType(), tokens);
+			}
+			
 			overallResult = ParseResult.of(MathOperationTreeNode.of(operation, overallResult.getNode(), secondOperandResult.getNode()), secondOperandResult.getRemainder());
 		}
 		
@@ -138,7 +144,7 @@ final class ExpressionParser extends AbstractArrowParser {
 		
 		assert !tokens.isEmpty();
 		
-		return ParseResult.of(DataParseTreeNode.of(new MemoryEntry(Integer.parseInt(tokens.get(0).getContent()))), tokenResult.getRemainder());
+		return ParseResult.of(DataParseTreeNode.of(MemoryEntry.initialized(Integer.parseInt(tokens.get(0).getContent()), IntegerType.getInstance())), tokenResult.getRemainder());
 	}
 	
 	private ParseResult<ArrowTokenType> parseIdentifier(List<Token<ArrowTokenType>> tokens) {

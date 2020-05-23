@@ -7,6 +7,7 @@ import java.util.Objects;
 import memory.MemoryEntry;
 import symboltable.SymbolTableEntry;
 import symboltable.SymbolTableEntryType;
+import typesystem.Type;
 
 public class FunctionCallNode extends AbstractParseTreeNode {
 	private final SymbolTableEntry function;
@@ -51,5 +52,10 @@ public class FunctionCallNode extends AbstractParseTreeNode {
 	public MemoryEntry getData() {
 		assert false;
 		return null;
+	}
+
+	@Override
+	public Type getDataType() {
+		return function.getDataType();
 	}
 }

@@ -1,17 +1,39 @@
 package memory;
 
+import java.util.Objects;
+
+import typesystem.Type;
+
 public class MemoryEntry {
-	//TODO: make this support types
 	private int value;
 	private boolean initialized;
+	private final Type dataType;
 	
-	public MemoryEntry(int value) {
+	private MemoryEntry(int value, Type dataType) {
 		this.value = value;
 		initialized = true;
+		this.dataType = dataType;
 	}
 	
-	public MemoryEntry() {
+	public static MemoryEntry initialized(int value, Type dataType) {
+		Objects.requireNonNull(dataType);
+		
+		return new MemoryEntry(value, dataType);
+	}
+	
+	public static MemoryEntry uninitialized(Type dataType) {
+		Objects.requireNonNull(dataType);
+		
+		return new MemoryEntry(dataType);
+	}
+	
+	public MemoryEntry(Type dataType) {
 		initialized = false;
+		this.dataType = dataType;
+	}
+	
+	public Type getDataType() {
+		return dataType;
 	}
 	
 	public boolean isInitialized() {

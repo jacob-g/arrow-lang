@@ -41,7 +41,9 @@ final class FunctionCallExecutor extends AbstractExecutor {
 		while (formalParamIterator.hasNext()) {
 			assert actualParamsIterator.hasNext();
 			
-			MemoryEntry formalParamEntry = runtimeData.add(formalParamIterator.next().getIdentifier());
+			ParseTreeNode formalParam = formalParamIterator.next();
+			
+			MemoryEntry formalParamEntry = runtimeData.add(formalParam.getIdentifier(), formalParam.getDataType());
 			formalParamEntry.setValue(actualParamsIterator.next().getValue());
 		}
 		

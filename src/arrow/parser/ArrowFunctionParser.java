@@ -71,7 +71,7 @@ final class ArrowFunctionParser extends AbstractArrowParser {
 		if (symbolTable.contains(nameToken.getContent())) {
 			return ParseResult.failure("Function name already defined", remainder);
 		}
-		SymbolTableEntry functionIdentifier = symbolTable.add(nameToken.getContent(), SymbolTableEntryType.FUNCTION);
+		SymbolTableEntry functionIdentifier = symbolTable.add(nameToken.getContent(), SymbolTableEntryType.FUNCTION, returnTypeEntry.getDataType());
 		
 		//now read the arguments
 		remainder = remainder.subList(2, remainder.size());
@@ -155,7 +155,7 @@ final class ArrowFunctionParser extends AbstractArrowParser {
 			}
 		}
 		
-		ParseTreeNode functionNode = FunctionParseTreeNode.of(children, ArgumentParseTreeNode.of(argNodes));
+		ParseTreeNode functionNode = FunctionParseTreeNode.of(children, ArgumentParseTreeNode.of(argNodes), returnTypeEntry.getDataType());
 		functionIdentifier.setPayload(functionNode);
 		return ParseResult.of(functionNode, remainder);
 	}
@@ -186,7 +186,7 @@ final class ArrowFunctionParser extends AbstractArrowParser {
 		if (symbolTable.contains(argNameToken.getContent())) {
 			return ParseResult.failure("Function argument name already defined: " + argNameToken.getContent(), remainder);
 		}
-		SymbolTableEntry argEntry = symbolTable.add(argNameToken.getContent(), SymbolTableEntryType.VARIABLE);
+		SymbolTableEntry argEntry = symbolTable.add(argNameToken.getContent(), SymbolTableEntryType.VARIABLE, argTypeEntry.getDataType());
 		
 		//if it ends with a comma, consume it
 		if (remainder.get(2).getType() == ArrowTokenType.COMMA) {
