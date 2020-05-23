@@ -25,6 +25,15 @@ function
 | \-->
 ^ result
 
+function
+/--> bool negate(bool x)
+| bool result
+| result = false
+| /--< x
+| | result = true
+| \-->
+^ result
+
 main
 bool result
-result = isPrime(97)
+result = isPrime(95)

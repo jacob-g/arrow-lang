@@ -1,5 +1,6 @@
 package arrow.parser;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import parser.tree.ParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
 import symboltable.SymbolTableEntryType;
+import typesystem.Type;
 
 final class FunctionCallParser extends AbstractArrowParser {
 
@@ -81,6 +83,21 @@ final class FunctionCallParser extends AbstractArrowParser {
 		if (argNodes.size() != functionIdentifier.getPayload().getAttribute(ParseTreeAttributeType.ARGUMENTS).getChildren().size()) {
 			return ParseResult.failure("Wrong argument count", tokens);
 		}
+		
+		Iterator<Type> formalParamTypeIterator = functionIdentifier.getPayload().getAttribute(ParseTreeAttributeType.ARGUMENTS).getChildren().stream().map(node -> node.getDataType()).iterator();
+		Iterator<Type> actualParamTypeIterator = argNodes.stream().map(node -> node.getDataType()).iterator();
+		
+		while (formalParamTypeIterator.hasNext()) {
+			assert actualParamTypeIterator.hasNext();
+			
+			Type lastFormalParamType = formalParamTypeIterator.next();
+			Type lastActualParamType = actualParamTypeIterator.next();
+			
+			if (lastFormalParamType != lastActualParamType) {
+				return ParseResult.failure("Incompatible types in function call, expected " + lastFormalParamType + " found " + lastActualParamType, remainder);
+			}
+		}
+		assert !actualParamTypeIterator.hasNext();
 		
 		return ParseResult.of(FunctionCallNode.of(functionIdentifier, argNodes), remainder);
 	}
