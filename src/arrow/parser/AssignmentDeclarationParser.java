@@ -1,6 +1,5 @@
 package arrow.parser;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -119,6 +118,7 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 					return closingSubscriptResult;
 				}
 				remainder = closingSubscriptResult.getRemainder();
+				break;
 				
 			default:
 				moreSubscripts = false;

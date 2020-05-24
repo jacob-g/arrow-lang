@@ -28,6 +28,11 @@ final class TypeParser extends AbstractArrowParser {
 	public ParseResult<ArrowTokenType> parse(List<Token<ArrowTokenType>> tokens) {
 		//get the data type
 		final String typeName = tokens.get(0).getContent();
+		
+		if (!symbolTable.contains(typeName)) {
+			return ParseResult.failure("Invalid return type for function", tokens);
+		}
+		
 		Type varType = symbolTable.lookup(typeName).getDataType();
 		
 		List<Token<ArrowTokenType>> remainder = tokens.subList(1, tokens.size());

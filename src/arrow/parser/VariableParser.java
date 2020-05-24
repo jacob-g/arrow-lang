@@ -90,6 +90,8 @@ final class VariableParser extends AbstractArrowParser {
 				}
 				remainder = closingSubscriptResult.getRemainder();
 				
+				break;
+				
 			default:
 				moreSubscripts = false;
 			}

@@ -46,8 +46,7 @@ public final class ArrayType implements Type {
 	}
 
 	public MemoryEntry newEntry() {
-		assert false;
-		return null;
+		return ArrayMemoryEntry.uninitialized(this);
 	}
 	
 	public MemoryEntry newEntry(List<Integer> sizes) {

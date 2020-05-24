@@ -7,28 +7,34 @@ import java.util.Objects;
 import typesystem.Type;
 
 public final class ArrayMemoryEntry implements MemoryEntry {
-	private final int size;
+	private int size;
 	private final Type dataType;
 	private final List<MemoryEntry> subMemoryEntries;
+	private boolean initialized;
 	
-	private ArrayMemoryEntry(Type dataType, List<Integer> sizes) {
+	private ArrayMemoryEntry(Type dataType, List<Integer> sizes, boolean initialized) {
 		assert dataType != null && dataType.isArrayType();
-		assert !sizes.isEmpty();
-		assert sizes.get(0) >= 0;
+		assert !initialized || (sizes.get(0) >= 0 && !sizes.isEmpty());
 		
 		this.dataType = dataType;
-		this.size = sizes.get(0);
-		
-		List<Integer> remainingSizes = sizes.subList(1, sizes.size());
-		
-		subMemoryEntries = new ArrayList<>(size);
-		for (int i = 0; i < size; i++) {
-			if (remainingSizes.isEmpty()) {
-				subMemoryEntries.add(dataType.getUnderlyingType().newEntry());
-			} else {
-				subMemoryEntries.add(dataType.getUnderlyingType().newEntry(remainingSizes));
-			}
+		this.initialized = initialized;
+		if (initialized) {
+			this.size = sizes.get(0);
 			
+			List<Integer> remainingSizes = sizes.subList(1, sizes.size());
+			
+			subMemoryEntries = new ArrayList<>(size);
+			for (int i = 0; i < size; i++) {
+				if (remainingSizes.isEmpty()) {
+					subMemoryEntries.add(dataType.getUnderlyingType().newEntry());
+				} else {
+					subMemoryEntries.add(dataType.getUnderlyingType().newEntry(remainingSizes));
+				}
+				
+			}
+		} else {
+			this.size = -1;
+			subMemoryEntries = null;
 		}
 	}
 	
@@ -46,7 +52,13 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 			throw new IllegalArgumentException("Array size must be non-negative");
 		}
 		
-		return new ArrayMemoryEntry(dataType, sizes);
+		return new ArrayMemoryEntry(dataType, sizes, true);
+	}
+	
+	public static ArrayMemoryEntry uninitialized(Type dataType) {
+		Objects.requireNonNull(dataType);
+		
+		return new ArrayMemoryEntry(dataType, null, false);
 	}
 	
 	@Override
@@ -57,6 +69,7 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 	@Override
 	public void copy(MemoryEntry other) {
 		assert false;
+		//TODO: add array copying
 	}
 
 	@Override
@@ -68,7 +81,7 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 	//the array itself is always initialized
 	@Override
 	public boolean isInitialized() {
-		return true;
+		return initialized;
 	}
 
 	@Override
@@ -108,6 +121,13 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 		requireInBounds(index);
 			
 		return subMemoryEntries.get(index);
+	}
+
+	@Override
+	public int getSize() {
+		assert initialized;
+		
+		return size;
 	}
 
 }

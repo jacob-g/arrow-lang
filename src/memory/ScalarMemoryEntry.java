@@ -76,4 +76,10 @@ public final class ScalarMemoryEntry implements MemoryEntry {
 		assert false : "getting array index of a scalar";
 		return null;
 	}
+
+	@Override
+	public int getSize() {
+		assert false;
+		return 0;
+	}
 }
