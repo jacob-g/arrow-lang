@@ -107,8 +107,8 @@ public class CompoundExecutor extends AbstractExecutor {
 				subscripts.add(ExpressionExecutor.of(runtimeData).execute(subscriptNode).getScalarValue());
 			}
 			
-			System.out.println("Assigning to variable: " + identifier + subscripts.stream().map(s -> "[" + s + "]").collect(Collectors.joining()) + " value " + value.getScalarValue());
-				
+			System.out.println("Assigning to variable: " + identifier + subscripts.stream().map(s -> "[" + s + "]").collect(Collectors.joining()) + " value " + value);
+			
 			runtimeData.lookup(identifier).copy(subscripts, value);
 		} else {
 			System.out.println("Assigning to variable: " + identifier + " value " + value.getScalarValue());

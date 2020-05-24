@@ -82,4 +82,8 @@ public final class ScalarMemoryEntry implements MemoryEntry {
 		assert false : "getting size of a scalar";
 		return 0;
 	}
+	
+	public String toString() {
+		return initialized ? Integer.toString(value) : "uninitialized scalar";
+	}
 }

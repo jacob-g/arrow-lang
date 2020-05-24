@@ -3,8 +3,8 @@ package memory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import typesystem.Type;
 
 public final class ArrayMemoryEntry implements MemoryEntry {
@@ -47,13 +47,15 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 			throw new IllegalArgumentException("Scalar type passed to array");
 		}
 		
-		assert !sizes.isEmpty();
-		
-		if (sizes.get(0) < 0) {
-			throw new IllegalArgumentException("Array size must be non-negative");
+		if (sizes.isEmpty()) {
+			return uninitialized(dataType);
+		} else {
+			if (sizes.get(0) < 0) {
+				throw new IllegalArgumentException("Array size must be non-negative");
+			}
+			
+			return new ArrayMemoryEntry(dataType, sizes, true);
 		}
-		
-		return new ArrayMemoryEntry(dataType, sizes, true);
 	}
 	
 	public static ArrayMemoryEntry uninitialized(Type dataType) {
@@ -105,22 +107,26 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 
 	@Override
 	public void copy(List<Integer> indices, MemoryEntry other) {
-		assert !indices.isEmpty() : "number of subscripts should match array dimension";
+		Objects.requireNonNull(indices);
+		Objects.requireNonNull(other);
 		
-		int index = indices.get(0);
-			
-		requireInBounds(index);
-			
-		if (subMemoryEntries.get(index).isArray()) {
-			assert indices.size() >= 1;
-			
-			subMemoryEntries.get(index).copy(indices.subList(1, indices.size()), other);
+		if (indices.isEmpty()) {
+			copy(other);
 		} else {
-			assert indices.size() == 1;
+			int index = indices.get(0);
 			
-			subMemoryEntries.get(index).copy(other);
+			requireInBounds(index);
+				
+			if (subMemoryEntries.get(index).isArray()) {
+				assert indices.size() >= 1;
+				
+				subMemoryEntries.get(index).copy(indices.subList(1, indices.size()), other);
+			} else {
+				assert indices.size() == 1;
+				
+				subMemoryEntries.get(index).copy(other);
+			}
 		}
-			
 	}
 
 	@Override
@@ -137,4 +143,7 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 		return size;
 	}
 
+	public String toString() {
+		return initialized ? subMemoryEntries.stream().map(entry -> entry.toString()).collect(Collectors.joining(",", "[", "]"))  : "uninitialized array";
+	}
 }
