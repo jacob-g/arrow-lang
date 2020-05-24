@@ -24,9 +24,9 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 		subMemoryEntries = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			if (remainingSizes.isEmpty()) {
-				subMemoryEntries.add(dataType.newEntry());
+				subMemoryEntries.add(dataType.getUnderlyingType().newEntry());
 			} else {
-				subMemoryEntries.add(dataType.newEntry(remainingSizes));
+				subMemoryEntries.add(dataType.getUnderlyingType().newEntry(remainingSizes));
 			}
 			
 		}
@@ -61,7 +61,7 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 
 	@Override
 	public int getScalarValue() {
-		assert false;
+		assert false : "getting scalar value of array";
 		return 0;
 	}
 
@@ -75,19 +75,21 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 	public boolean isArray() {
 		return true;
 	}
-
-	@Override
-	public void copy(List<Integer> indices, MemoryEntry other) {
-		if (indices.isEmpty()) {
-			assert false : "number of subscripts should match array dimension";
-		}
-		
-		int index = indices.get(0);
-			
+	
+	private void requireInBounds(int index) {
 		if (index < 0 || index >= size) {
 			//TODO: have a way to handle runtime errors
 			throw new IndexOutOfBoundsException("Invalid index for array: " + index);
 		}
+	}
+
+	@Override
+	public void copy(List<Integer> indices, MemoryEntry other) {
+		assert !indices.isEmpty() : "number of subscripts should match array dimension";
+		
+		int index = indices.get(0);
+			
+		requireInBounds(index);
 			
 		if (subMemoryEntries.get(index).isArray()) {
 			assert indices.size() >= 1;
@@ -99,6 +101,13 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 			subMemoryEntries.get(index).copy(other);
 		}
 			
+	}
+
+	@Override
+	public MemoryEntry getArrayValue(int index) {			
+		requireInBounds(index);
+			
+		return subMemoryEntries.get(index);
 	}
 
 }

@@ -8,6 +8,7 @@ import memory.RuntimeDataStack;
 import memory.ScalarMemoryEntry;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
+import typesystem.IntegerType;
 
 class ExpressionExecutor extends AbstractExecutor {
 	private ExpressionExecutor(RuntimeDataStack runtimeData) {
@@ -65,7 +66,7 @@ class ExpressionExecutor extends AbstractExecutor {
 			throw new IllegalStateException("Working with undefined variables");
 		}
 		
-		assert !firstOperand.isArray() && !secondOperand.isArray();
+		assert !firstOperand.isArray() && !secondOperand.isArray() : "attempting to perform math operations on array";
 		
 		int op1 = firstOperand.getScalarValue();
 		int op2 = secondOperand.getScalarValue();
@@ -130,9 +131,23 @@ class ExpressionExecutor extends AbstractExecutor {
 
 	private MemoryEntry executeVariable(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.VARIABLE;
+				
+		MemoryEntry varEntry = runtimeData.lookup(node.getIdentifier());
 		
-		//TODO: if there's an undefined variable cause problems
+		if (varEntry.isArray()) {
+			for (ParseTreeNode subscriptNode : node.getChildren()) {
+				MemoryEntry subscriptEntry = execute(subscriptNode);
+				
+				assert subscriptEntry.getDataType().canBeAssignedTo(IntegerType.getInstance());
+				
+				varEntry = varEntry.getArrayValue(subscriptEntry.getScalarValue());
+			}
+		}
 		
-		return runtimeData.lookup(node.getIdentifier());
+		if (!varEntry.isInitialized()) {
+			throw new IllegalStateException("Accessing uninitialized variable");
+		}
+		
+		return varEntry;
 	}
 }

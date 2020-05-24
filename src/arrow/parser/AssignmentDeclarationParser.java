@@ -1,6 +1,7 @@
 package arrow.parser;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import arrow.lexer.ArrowTokenType;
@@ -12,6 +13,7 @@ import parser.tree.ParseTreeNode;
 import parser.tree.VariableParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntryType;
+import typesystem.IntegerType;
 import typesystem.Type;
 
 final class AssignmentDeclarationParser extends AbstractArrowParser {
@@ -76,9 +78,56 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 			return ParseResult.failure("Redefining previously defined identifier: " + varName, tokens);
 		}
 		
-		ParseTreeNode varNode = VariableParseTreeNode.of(symbolTable.add(varName, SymbolTableEntryType.VARIABLE, varType), new ArrayList<>());
+		remainder = remainder.subList(1, remainder.size());
 		
-		return ParseResult.of(DeclarationParseTreeNode.of(varNode), remainder.subList(1, remainder.size()));
+		//TODO: this is repeated with the VariableParser
+		Type dimType = varType;
+		List<ParseTreeNode> dimensions = new LinkedList<>();
+		boolean moreSubscripts = true;
+		while (moreSubscripts) {
+			if (remainder.isEmpty()) {
+				return ParseResult.failure("Unexpected end-of-data", remainder);
+			}
+			
+			switch (remainder.get(0).getType()) {
+			case OPEN_SUBSCRIPT:
+				if (!dimType.isArrayType()) {
+					return ParseResult.failure("Too many subscripts", remainder);
+				}
+				
+				dimType = dimType.getUnderlyingType();
+				
+				remainder = remainder.subList(1, remainder.size()); //consume the open bracket
+				
+				//read the actual subscript
+				ParseResult<ArrowTokenType> subscriptResult = ExpressionParser.of(indentation, symbolTable).parse(remainder);
+				if (!subscriptResult.getSuccess()) {
+					return subscriptResult;
+				}
+				
+				//make sure the subscript type is compatible with integer
+				if (!subscriptResult.getNode().getDataType().canBeAssignedTo(IntegerType.getInstance())) {
+					return ParseResult.failure("Array subscripts must be integers, found " + subscriptResult.getNode().getDataType(), remainder);
+				}
+				
+				dimensions.add(subscriptResult.getNode());
+				
+				remainder = subscriptResult.getRemainder();
+				
+				ParseResult<ArrowTokenType> closingSubscriptResult = requireType(remainder, ArrowTokenType.CLOSE_SUBSCRIPT, 1);
+				if (!closingSubscriptResult.getSuccess()) {
+					return closingSubscriptResult;
+				}
+				remainder = closingSubscriptResult.getRemainder();
+				
+			default:
+				moreSubscripts = false;
+			}
+		}
+		
+		ParseTreeNode varNode = VariableParseTreeNode.of(symbolTable.add(varName, SymbolTableEntryType.VARIABLE, varType), dimensions);
+		
+		return ParseResult.of(DeclarationParseTreeNode.of(varNode, dimensions), remainder);
 	}
 
 	private ParseResult<ArrowTokenType> parseAssignment(List<Token<ArrowTokenType>> tokens) {
@@ -115,7 +164,6 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 		}
 		
 		//actually put the thing together
-		
 		AssignmentParseTreeNode assignNode = AssignmentParseTreeNode.of(varResult.getNode(), valueResult.getNode());
 		
 		return ParseResult.of(assignNode, valueResult.getRemainder());

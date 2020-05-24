@@ -1,6 +1,9 @@
 package executor;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import memory.MemoryEntry;
 import memory.RuntimeDataStack;
@@ -9,6 +12,7 @@ import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
 import symboltable.SymbolTableEntry;
 import symboltable.SymbolTableEntryType;
+import typesystem.IntegerType;
 
 public class CompoundExecutor extends AbstractExecutor {
 	private CompoundExecutor(RuntimeDataStack runtimeData) {
@@ -70,19 +74,46 @@ public class CompoundExecutor extends AbstractExecutor {
 		
 		SymbolTableEntry identifier = node.getAttribute(ParseTreeAttributeType.IDENTIFIER).getIdentifier();
 		assert identifier.getType() == SymbolTableEntryType.VARIABLE;
+		
+		if (identifier.getDataType().isArrayType()) {
+			List<Integer> subscripts = new LinkedList<>();
+			for (ParseTreeNode subscriptNode : node.getChildren()) {
+				MemoryEntry subscriptEntry = ExpressionExecutor.of(runtimeData).execute(subscriptNode);
 				
-		runtimeData.add(identifier, node.getDataType());
+				assert subscriptEntry.getDataType().canBeAssignedTo(IntegerType.getInstance());
+				
+				subscripts.add(subscriptEntry.getScalarValue());
+			}
+			
+			runtimeData.add(identifier, identifier.getDataType(), subscripts);
+		} else {
+			runtimeData.add(identifier, node.getDataType());
+		}
 	}
 	
 	private void executeAssignment(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.ASSIGNMENT;
 		assert node.getChildren().size() == 1;
 		
-		SymbolTableEntry identifier = node.getAttribute(ParseTreeAttributeType.IDENTIFIER).getIdentifier();
+		ParseTreeNode varNode = node.getAttribute(ParseTreeAttributeType.IDENTIFIER);
+		SymbolTableEntry identifier = varNode.getIdentifier();
 		assert identifier.getType() == SymbolTableEntryType.VARIABLE;
 		
 		MemoryEntry value = ExpressionExecutor.of(runtimeData).execute(node.getChildren().get(0));
-		System.out.println("Assigning to variable: " + identifier + " value " + value.getScalarValue());
-		runtimeData.lookup(identifier).copy(value);
+		
+		if (identifier.getDataType().isArrayType()) {
+			List<Integer> subscripts = new LinkedList<>();
+			for (ParseTreeNode subscriptNode : varNode.getChildren()) {
+				subscripts.add(ExpressionExecutor.of(runtimeData).execute(subscriptNode).getScalarValue());
+			}
+			
+			System.out.println("Assigning to variable: " + identifier + subscripts.stream().map(s -> "[" + s + "]").collect(Collectors.joining()) + " value " + value.getScalarValue());
+				
+			runtimeData.lookup(identifier).copy(subscripts, value);
+		} else {
+			System.out.println("Assigning to variable: " + identifier + " value " + value.getScalarValue());
+			runtimeData.lookup(identifier).copy(value);
+		}
+		
 	}
 }

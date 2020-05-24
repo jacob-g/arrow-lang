@@ -70,4 +70,10 @@ public final class ScalarMemoryEntry implements MemoryEntry {
 	public void copy(List<Integer> indices, MemoryEntry other) {
 		assert false;
 	}
+
+	@Override
+	public MemoryEntry getArrayValue(int index) {
+		assert false : "getting array index of a scalar";
+		return null;
+	}
 }
