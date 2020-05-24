@@ -1,5 +1,6 @@
 package typesystem;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,7 +50,11 @@ public final class ArrayType implements Type {
 		return null;
 	}
 	
-	public MemoryEntry newEntry(int size) {
-		return ArrayMemoryEntry.of(this, size);
+	public MemoryEntry newEntry(List<Integer> sizes) {
+		return ArrayMemoryEntry.of(this, sizes);
+	}
+	
+	public String toString() {
+		return underlyingType.toString() + "[]";
 	}
 }

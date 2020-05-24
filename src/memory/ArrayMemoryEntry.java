@@ -11,31 +11,42 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 	private final Type dataType;
 	private final List<MemoryEntry> subMemoryEntries;
 	
-	private ArrayMemoryEntry(Type dataType, int size) {
+	private ArrayMemoryEntry(Type dataType, List<Integer> sizes) {
 		assert dataType != null && dataType.isArrayType();
-		assert size >= 0;
+		assert !sizes.isEmpty();
+		assert sizes.get(0) >= 0;
 		
 		this.dataType = dataType;
-		this.size = size;
+		this.size = sizes.get(0);
+		
+		List<Integer> remainingSizes = sizes.subList(1, sizes.size());
 		
 		subMemoryEntries = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
-			subMemoryEntries.add(dataType.newEntry());
+			if (remainingSizes.isEmpty()) {
+				subMemoryEntries.add(dataType.newEntry());
+			} else {
+				subMemoryEntries.add(dataType.newEntry(remainingSizes));
+			}
+			
 		}
 	}
 	
-	public static ArrayMemoryEntry of(Type dataType, int size) {
+	public static ArrayMemoryEntry of(Type dataType, List<Integer> sizes) {
 		Objects.requireNonNull(dataType);
+		Objects.requireNonNull(sizes);
 		
 		if (!dataType.isArrayType()) {
 			throw new IllegalArgumentException("Scalar type passed to array");
 		}
 		
-		if (size < 0) {
+		assert !sizes.isEmpty();
+		
+		if (sizes.get(0) < 0) {
 			throw new IllegalArgumentException("Array size must be non-negative");
 		}
 		
-		return new ArrayMemoryEntry(dataType, size);
+		return new ArrayMemoryEntry(dataType, sizes);
 	}
 	
 	@Override
@@ -45,7 +56,7 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 
 	@Override
 	public void copy(MemoryEntry other) {
-		assert other.isArray();
+		assert false;
 	}
 
 	@Override
@@ -63,6 +74,31 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 	@Override
 	public boolean isArray() {
 		return true;
+	}
+
+	@Override
+	public void copy(List<Integer> indices, MemoryEntry other) {
+		if (indices.isEmpty()) {
+			assert false : "number of subscripts should match array dimension";
+		}
+		
+		int index = indices.get(0);
+			
+		if (index < 0 || index >= size) {
+			//TODO: have a way to handle runtime errors
+			throw new IndexOutOfBoundsException("Invalid index for array: " + index);
+		}
+			
+		if (subMemoryEntries.get(index).isArray()) {
+			assert indices.size() >= 1;
+			
+			subMemoryEntries.get(index).copy(indices.subList(1, indices.size()), other);
+		} else {
+			assert indices.size() == 1;
+			
+			subMemoryEntries.get(index).copy(other);
+		}
+			
 	}
 
 }

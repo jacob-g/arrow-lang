@@ -2,6 +2,7 @@ package typesystem;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public final class BoolType implements Type {
 	}
 
 	@Override
-	public MemoryEntry newEntry(int size) {
+	public MemoryEntry newEntry(List<Integer> sizes) {
 		assert false;
 		return null;
 	}

@@ -49,6 +49,14 @@ public class VariableParseTreeNode extends AbstractParseTreeNode {
 
 	@Override
 	public Type getDataType() {
-		return identifier.getDataType();
+		Type type = identifier.getDataType();
+		
+		for (int i = 0; i < subscripts.size(); i++) {
+			assert type.isArrayType();
+			
+			type = type.getUnderlyingType();
+		}
+		
+		return type;
 	}
 }

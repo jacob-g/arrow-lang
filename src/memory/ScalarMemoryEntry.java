@@ -1,5 +1,6 @@
 package memory;
 
+import java.util.List;
 import java.util.Objects;
 
 import typesystem.Type;
@@ -63,5 +64,10 @@ public final class ScalarMemoryEntry implements MemoryEntry {
 	@Override
 	public boolean isArray() {
 		return false;
+	}
+
+	@Override
+	public void copy(List<Integer> indices, MemoryEntry other) {
+		assert false;
 	}
 }

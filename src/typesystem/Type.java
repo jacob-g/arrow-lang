@@ -1,5 +1,6 @@
 package typesystem;
 
+import java.util.List;
 import java.util.Optional;
 
 import memory.MemoryEntry;
@@ -12,5 +13,5 @@ public interface Type {
 	boolean isArrayType();
 	Type getUnderlyingType();
 	MemoryEntry newEntry();
-	MemoryEntry newEntry(int size);
+	MemoryEntry newEntry(List<Integer> sizes);
 }
