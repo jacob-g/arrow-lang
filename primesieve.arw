@@ -1,0 +1,38 @@
+main
+int max
+max = 100
+
+bool[] primes[100]
+primes[0] = false
+primes[1] = false
+
+int i
+i = 2
+/-->
+| primes[i] = true
+| i = i + 1
+\--< i < max
+
+int firstPrime
+firstPrime = 1
+/-->
+| bool firstIsComposite
+| /-->
+| | firstPrime = firstPrime + 1
+| | firstIsComposite = false
+| | /--< firstPrime > max or firstPrime == max
+| | | firstIsComposite = not primes[firstPrime]
+| | \-->
+| \--< firstIsComposite
+| /--< firstPrime > max or firstPrime == max
+| | primes[firstPrime] = true
+| | int composite
+| | composite = firstPrime * 2
+| | /--< composite > max
+| | | /-->
+| | | | primes[composite] = false
+| | | | composite = composite + firstPrime
+| | | \--< composite < max
+| | \-->
+| \-->
+\--< firstPrime < max - 1

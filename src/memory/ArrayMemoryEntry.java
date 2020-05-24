@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import typesystem.Type;
 
 public final class ArrayMemoryEntry implements MemoryEntry {
@@ -68,7 +69,7 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 
 	@Override
 	public void copy(MemoryEntry other) {
-		assert false;
+		throw new NotImplementedException();
 		//TODO: add array copying
 	}
 
