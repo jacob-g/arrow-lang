@@ -68,7 +68,7 @@ public final class ScalarMemoryEntry implements MemoryEntry {
 
 	@Override
 	public void copy(List<Integer> indices, MemoryEntry other) {
-		assert false;
+		assert false : "array-copying a scalar";
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public final class ScalarMemoryEntry implements MemoryEntry {
 
 	@Override
 	public int getSize() {
-		assert false;
+		assert false : "getting size of a scalar";
 		return 0;
 	}
 }

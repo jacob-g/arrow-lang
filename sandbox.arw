@@ -1,0 +1,10 @@
+function
+/--> int foo(int[] x)
+| x[0] = 1
+^ 1
+
+main
+int[] x[5]
+x[0] = 2
+int res
+res = x[0]

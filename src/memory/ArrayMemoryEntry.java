@@ -10,7 +10,7 @@ import typesystem.Type;
 public final class ArrayMemoryEntry implements MemoryEntry {
 	private int size;
 	private final Type dataType;
-	private final List<MemoryEntry> subMemoryEntries;
+	private List<MemoryEntry> subMemoryEntries;
 	private boolean initialized;
 	
 	private ArrayMemoryEntry(Type dataType, List<Integer> sizes, boolean initialized) {
@@ -69,8 +69,14 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 
 	@Override
 	public void copy(MemoryEntry other) {
-		throw new NotImplementedException();
-		//TODO: add array copying
+		this.size = other.getSize();
+		
+		this.subMemoryEntries = new ArrayList<>(other.getSize());
+		
+		for (int i = 0; i < other.getSize(); i++) {
+			subMemoryEntries.add(other.getArrayValue(i).getDataType().newEntry());
+			subMemoryEntries.get(i).copy(other.getArrayValue(i));
+		}
 	}
 
 	@Override
