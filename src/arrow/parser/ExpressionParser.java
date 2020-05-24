@@ -16,7 +16,6 @@ import parser.ParseResult;
 import parser.tree.DataParseTreeNode;
 import parser.tree.MathOperationTreeNode;
 import parser.tree.ParseTreeNodeType;
-import parser.tree.VariableParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
 import typesystem.BoolType;
@@ -197,7 +196,11 @@ final class ExpressionParser extends AbstractArrowParser {
 		case FUNCTION:
 			return FunctionCallParser.of(indentation, symbolTable).parse(tokens);
 		case VARIABLE:
-			return ParseResult.of(VariableParseTreeNode.of(variableEntry), tokens.subList(1, tokens.size()));
+			ParseResult<ArrowTokenType> varResult = VariableParser.of(indentation, symbolTable).parse(tokens);
+			if (!varResult.getSuccess()) {
+				return varResult;
+			}
+			return ParseResult.of(varResult.getNode(), varResult.getRemainder());
 		default:
 			return ParseResult.failure("Invalid identifier in expression", tokens);
 		}

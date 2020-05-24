@@ -12,4 +12,5 @@ public interface Type {
 	boolean isArrayType();
 	Type getUnderlyingType();
 	MemoryEntry newEntry();
+	MemoryEntry newEntry(int size);
 }

@@ -1,6 +1,6 @@
 package parser.tree;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,22 +10,25 @@ import typesystem.Type;
 
 public class VariableParseTreeNode extends AbstractParseTreeNode {
 	private final SymbolTableEntry identifier;
+	private final List<ParseTreeNode> subscripts;
 	
-	private VariableParseTreeNode(SymbolTableEntry identifier) {
+	private VariableParseTreeNode(SymbolTableEntry identifier, List<ParseTreeNode> subscripts) {
 		assert identifier != null;
 		
 		this.identifier = identifier;
+		this.subscripts = subscripts;
 	}
 	
-	public static VariableParseTreeNode of(SymbolTableEntry identifier) {
+	public static VariableParseTreeNode of(SymbolTableEntry identifier, List<ParseTreeNode> subscripts) {
 		Objects.requireNonNull(identifier);
+		Objects.requireNonNull(subscripts);
 		
-		return new VariableParseTreeNode(identifier);
+		return new VariableParseTreeNode(identifier, subscripts);
 	}
 
 	@Override
 	public List<ParseTreeNode> getChildren() {
-		return new ArrayList<>();
+		return Collections.unmodifiableList(subscripts);
 	}
 
 	@Override

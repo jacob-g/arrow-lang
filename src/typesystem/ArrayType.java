@@ -3,6 +3,7 @@ package typesystem;
 import java.util.Objects;
 import java.util.Optional;
 
+import memory.ArrayMemoryEntry;
 import memory.MemoryEntry;
 import parser.tree.ParseTreeNodeType;
 
@@ -44,7 +45,11 @@ public final class ArrayType implements Type {
 	}
 
 	public MemoryEntry newEntry() {
-		//TODO: implement this
-		throw new UnsupportedOperationException();
+		assert false;
+		return null;
+	}
+	
+	public MemoryEntry newEntry(int size) {
+		return ArrayMemoryEntry.of(this, size);
 	}
 }

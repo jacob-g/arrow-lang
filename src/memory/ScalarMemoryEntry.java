@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import typesystem.Type;
 
-public class ScalarMemoryEntry implements MemoryEntry {
+public final class ScalarMemoryEntry implements MemoryEntry {
 	private int value;
 	private boolean initialized;
 	private final Type dataType;
@@ -54,6 +54,8 @@ public class ScalarMemoryEntry implements MemoryEntry {
 
 	@Override
 	public void copy(MemoryEntry other) {
+		assert getDataType().canBeAssignedTo(other.getDataType());
+		
 		this.initialized = true;
 		this.value = other.getScalarValue();
 	}

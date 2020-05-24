@@ -11,7 +11,7 @@ import typesystem.Type;
 public class AssignmentParseTreeNode extends AbstractParseTreeNode {
 	private final ParseTreeNode value;
 	
-	private AssignmentParseTreeNode(VariableParseTreeNode variable, ParseTreeNode value) {
+	private AssignmentParseTreeNode(ParseTreeNode variable, ParseTreeNode value) {
 		assert variable != null;
 		assert value != null;
 		
@@ -19,10 +19,13 @@ public class AssignmentParseTreeNode extends AbstractParseTreeNode {
 		this.value = value;
 	}
 	
-	//TODO: make this take a value too
-	public static AssignmentParseTreeNode of(VariableParseTreeNode variable, ParseTreeNode value) {
+	public static AssignmentParseTreeNode of(ParseTreeNode variable, ParseTreeNode value) {
 		Objects.requireNonNull(variable);
 		Objects.requireNonNull(value);
+		
+		if (variable.getType() != ParseTreeNodeType.VARIABLE) {
+			throw new IllegalArgumentException("Variable passed to assignment must be of type variable");
+		}
 		
 		return new AssignmentParseTreeNode(variable, value);
 	}

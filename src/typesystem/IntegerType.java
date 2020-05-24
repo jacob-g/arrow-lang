@@ -68,4 +68,10 @@ public final class IntegerType implements Type {
 	public MemoryEntry newEntry() {
 		return ScalarMemoryEntry.uninitialized(this);
 	}
+
+	@Override
+	public MemoryEntry newEntry(int size) {
+		assert false;
+		return null;
+	}
 }

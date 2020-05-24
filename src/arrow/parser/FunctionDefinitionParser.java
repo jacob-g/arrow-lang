@@ -1,5 +1,6 @@
 package arrow.parser;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -192,6 +193,6 @@ final class FunctionDefinitionParser extends AbstractArrowParser {
 			remainder = remainder.subList(1, remainder.size());
 		}
 		
-		return ParseResult.of(VariableParseTreeNode.of(argEntry), remainder);
+		return ParseResult.of(VariableParseTreeNode.of(argEntry, new ArrayList<>()), remainder);
 	}
 }
