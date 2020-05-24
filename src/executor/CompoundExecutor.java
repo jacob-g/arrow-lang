@@ -82,7 +82,7 @@ public class CompoundExecutor extends AbstractExecutor {
 		assert identifier.getType() == SymbolTableEntryType.VARIABLE;
 		
 		MemoryEntry value = ExpressionExecutor.of(runtimeData).execute(node.getChildren().get(0));
-		System.out.println("Assigning to variable: " + identifier + " value " + value.getValue());
-		runtimeData.lookup(identifier).setValue(value.getValue());
+		System.out.println("Assigning to variable: " + identifier + " value " + value.getScalarValue());
+		runtimeData.lookup(identifier).copy(value);
 	}
 }

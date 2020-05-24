@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import memory.MemoryEntry;
 import memory.RuntimeDataStack;
+import memory.ScalarMemoryEntry;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
 
@@ -64,8 +65,10 @@ class ExpressionExecutor extends AbstractExecutor {
 			throw new IllegalStateException("Working with undefined variables");
 		}
 		
-		int op1 = firstOperand.getValue();
-		int op2 = secondOperand.getValue();
+		assert !firstOperand.isArray() && !secondOperand.isArray();
+		
+		int op1 = firstOperand.getScalarValue();
+		int op2 = secondOperand.getScalarValue();
 		
 		int out = 0;
 				
@@ -96,7 +99,7 @@ class ExpressionExecutor extends AbstractExecutor {
 			assert false;
 		}
 		
-		return MemoryEntry.initialized(out, node.getDataType());
+		return ScalarMemoryEntry.initialized(out, node.getDataType());
 	}
 	
 	private MemoryEntry executeUnaryMathOperation(ParseTreeNode node) {
@@ -109,7 +112,7 @@ class ExpressionExecutor extends AbstractExecutor {
 			throw new IllegalStateException("Working with undefined variables");
 		}
 		
-		int op1 = operand.getValue();
+		int op1 = operand.getScalarValue();
 		
 		int out = 0;
 				
@@ -122,7 +125,7 @@ class ExpressionExecutor extends AbstractExecutor {
 			assert false;
 		}
 		
-		return MemoryEntry.initialized(out, node.getDataType());
+		return ScalarMemoryEntry.initialized(out, node.getDataType());
 	}
 
 	private MemoryEntry executeVariable(ParseTreeNode node) {

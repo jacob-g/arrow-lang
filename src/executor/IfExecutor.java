@@ -7,6 +7,7 @@ import memory.RuntimeDataStack;
 import parser.tree.ParseTreeAttributeType;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
+import typesystem.BoolType;
 
 class IfExecutor extends AbstractExecutor {
 	private IfExecutor(RuntimeDataStack runtimeData) {
@@ -26,7 +27,9 @@ class IfExecutor extends AbstractExecutor {
 		ParseTreeNode testNode = node.getAttribute(ParseTreeAttributeType.TEST);
 		MemoryEntry testValue = ExpressionExecutor.of(runtimeData).execute(testNode);
 		
-		if (testValue.getValue() == 0) {
+		assert BoolType.getInstance().canBeAssignedTo(testValue.getDataType());
+		
+		if (testValue.getScalarValue() == 0) {
 			//if the condition is true, then run the body
 			runtimeData.push();
 			CompoundExecutor.of(runtimeData).execute(node);

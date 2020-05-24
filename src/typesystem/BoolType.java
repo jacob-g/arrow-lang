@@ -6,17 +6,18 @@ import java.util.Optional;
 import java.util.Set;
 
 import memory.MemoryEntry;
+import memory.ScalarMemoryEntry;
 import parser.tree.ParseTreeNodeType;
 
 public final class BoolType implements Type {
 	private static final Set<ParseTreeNodeType> allowedBinaryOperations = new HashSet<>(Arrays.asList(ParseTreeNodeType.AND, ParseTreeNodeType.OR));
 	
 	public static MemoryEntry getTrue() {
-		return MemoryEntry.initialized(1, getInstance());
+		return ScalarMemoryEntry.initialized(1, getInstance());
 	}
 	
 	public static MemoryEntry getFalse() {
-		return MemoryEntry.initialized(0, getInstance());
+		return ScalarMemoryEntry.initialized(0, getInstance());
 	}
 	
 	private BoolType() {
@@ -57,5 +58,9 @@ public final class BoolType implements Type {
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		return other == BoolType.getInstance();
+	}
+	
+	public MemoryEntry newEntry() {
+		return ScalarMemoryEntry.uninitialized(this);
 	}
 }

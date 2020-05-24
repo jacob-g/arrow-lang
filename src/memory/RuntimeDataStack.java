@@ -6,6 +6,6 @@ import typesystem.Type;
 
 public class RuntimeDataStack extends SymbolTableStack<SymbolTableEntry, MemoryEntry> {
 	public MemoryEntry add(SymbolTableEntry identifier, Type dataType) {
-		return add(identifier, new MemoryEntry(dataType));
+		return add(identifier, dataType.newEntry());
 	}
 }

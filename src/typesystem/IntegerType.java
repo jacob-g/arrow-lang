@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import memory.MemoryEntry;
+import memory.ScalarMemoryEntry;
 import parser.tree.ParseTreeNodeType;
 
 public final class IntegerType implements Type {
@@ -61,5 +63,9 @@ public final class IntegerType implements Type {
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		return other == IntegerType.getInstance();
+	}
+	
+	public MemoryEntry newEntry() {
+		return ScalarMemoryEntry.uninitialized(this);
 	}
 }

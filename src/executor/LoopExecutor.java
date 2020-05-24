@@ -7,6 +7,7 @@ import memory.RuntimeDataStack;
 import parser.tree.ParseTreeAttributeType;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
+import typesystem.BoolType;
 
 class LoopExecutor extends AbstractExecutor {
 	private LoopExecutor(RuntimeDataStack runtimeData) {
@@ -30,7 +31,9 @@ class LoopExecutor extends AbstractExecutor {
 			runtimeData.pop();
 			ParseTreeNode testNode = node.getAttribute(ParseTreeAttributeType.TEST);
 			testValue = ExpressionExecutor.of(runtimeData).execute(testNode);
-		} while (testValue.getValue() != 0); //TODO: have a better way of handling loops
+			
+			assert BoolType.getInstance().canBeAssignedTo(testValue.getDataType());
+		} while (testValue.getScalarValue() != 0);
 		
 		return null;
 	}

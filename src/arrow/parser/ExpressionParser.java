@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 import arrow.lexer.ArrowTokenType;
 import lexer.Token;
-import memory.MemoryEntry;
+import memory.ScalarMemoryEntry;
 import parser.ParseResult;
 import parser.tree.DataParseTreeNode;
 import parser.tree.MathOperationTreeNode;
@@ -180,7 +180,7 @@ final class ExpressionParser extends AbstractArrowParser {
 		
 		assert !tokens.isEmpty();
 		
-		return ParseResult.of(DataParseTreeNode.of(MemoryEntry.initialized(Integer.parseInt(tokens.get(0).getContent()), IntegerType.getInstance())), tokenResult.getRemainder());
+		return ParseResult.of(DataParseTreeNode.of(ScalarMemoryEntry.initialized(Integer.parseInt(tokens.get(0).getContent()), IntegerType.getInstance())), tokenResult.getRemainder());
 	}
 	
 	private ParseResult<ArrowTokenType> parseIdentifier(List<Token<ArrowTokenType>> tokens) {

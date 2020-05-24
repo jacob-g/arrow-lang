@@ -36,4 +36,4 @@ function
 
 main
 bool result
-result = isPrime(97)
+result = isPrime(8)

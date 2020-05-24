@@ -2,6 +2,7 @@ package typesystem;
 
 import java.util.Optional;
 
+import memory.MemoryEntry;
 import parser.tree.ParseTreeNodeType;
 
 public interface Type {
@@ -10,4 +11,5 @@ public interface Type {
 	boolean canBeAssignedTo(Type other);
 	boolean isArrayType();
 	Type getUnderlyingType();
+	MemoryEntry newEntry();
 }

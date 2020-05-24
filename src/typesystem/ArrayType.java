@@ -3,6 +3,7 @@ package typesystem;
 import java.util.Objects;
 import java.util.Optional;
 
+import memory.MemoryEntry;
 import parser.tree.ParseTreeNodeType;
 
 public final class ArrayType implements Type {
@@ -42,4 +43,8 @@ public final class ArrayType implements Type {
 		return other.isArrayType() && getUnderlyingType().canBeAssignedTo(other.getUnderlyingType());
 	}
 
+	public MemoryEntry newEntry() {
+		//TODO: implement this
+		throw new UnsupportedOperationException();
+	}
 }
