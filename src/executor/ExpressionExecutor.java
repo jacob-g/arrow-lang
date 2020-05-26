@@ -2,13 +2,17 @@ package executor;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Scanner;
 
 import memory.MemoryEntry;
 import memory.RuntimeDataStack;
 import memory.ScalarMemoryEntry;
 import parser.tree.ParseTreeNode;
 import parser.tree.ParseTreeNodeType;
+import typesystem.ArrayType;
+import typesystem.CharType;
 import typesystem.IntegerType;
+import typesystem.Type;
 
 class ExpressionExecutor extends AbstractExecutor {
 	private ExpressionExecutor(RuntimeDataStack runtimeData) {
@@ -47,12 +51,33 @@ class ExpressionExecutor extends AbstractExecutor {
 			return FunctionCallExecutor.of(runtimeData).execute(node);
 		case ARRAY_LENGTH:
 			return ScalarMemoryEntry.initialized(execute(node.getChildren().get(0)).getSize(), IntegerType.getInstance());
+		case INPUT:
+			return executeInput(node.getDataType());
 		default:
 			assert false : "Invalid node type passed to expression executor";
 			return null;
 		}
 	}
 	
+	private MemoryEntry executeInput(Type dataType) {
+		Scanner scan = new Scanner(System.in);
+		
+		MemoryEntry result = null;
+		if (dataType.isCompatibleWith(IntegerType.getInstance())) {
+			result = ScalarMemoryEntry.initialized(scan.nextInt(), IntegerType.getInstance());
+		}
+		
+		if (dataType.isCompatibleWith(ArrayType.of(CharType.getInstance()))) {
+			result = CharType.getInstance().fromString(scan.nextLine());
+		}
+		
+		scan.close();
+		
+		assert result != null : "unhandled data type for input";
+		
+		return result;
+	}
+
 	private int boolToInt(boolean x) {
 		return x ? 1 : 0;
 	}

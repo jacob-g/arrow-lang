@@ -18,6 +18,7 @@ public enum ArrowTokenType {
 	NUMBER(ArrowTokenCategory.NUMBER),
 	LENGTH(ArrowTokenCategory.KEYWORD),
 	PRINT(ArrowTokenCategory.KEYWORD),
+	INPUT(ArrowTokenCategory.KEYWORD),
 	
 	//control flow symbols
 	START_IF(ArrowTokenCategory.SYMBOL, "/--<"),

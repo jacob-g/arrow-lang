@@ -30,7 +30,7 @@ final class TypeParser extends AbstractArrowParser {
 		final String typeName = tokens.get(0).getContent();
 		
 		if (!symbolTable.contains(typeName)) {
-			return ParseResult.failure("Invalid return type for function", tokens);
+			return ParseResult.failure("Undefined type: " + typeName, tokens);
 		}
 		
 		Type varType = symbolTable.lookup(typeName).getDataType();
@@ -38,21 +38,16 @@ final class TypeParser extends AbstractArrowParser {
 		List<Token<ArrowTokenType>> remainder = tokens.subList(1, tokens.size());
 		
 		//parse array subscripts
-		//TODO: move this out so it can be used for function parameters/return types too
-		if (remainder.get(0).getType() == ArrowTokenType.OPEN_SUBSCRIPT) {
+		if (!remainder.isEmpty()) {
 			boolean moreSubscripts = true;
 			while (moreSubscripts) {
-				if (remainder.size() < 2) {
-					return ParseResult.failure("Unexpected end of data", remainder);
-				}
-
 				if (remainder.get(0).getType() == ArrowTokenType.OPEN_SUBSCRIPT) {
 					//we found a [] in the text, so nest the current type inside another array
-					if (remainder.get(1).getType() == ArrowTokenType.CLOSE_SUBSCRIPT) {
+					if (remainder.size() > 1 && remainder.get(1).getType() == ArrowTokenType.CLOSE_SUBSCRIPT) {
 						remainder = remainder.subList(2, remainder.size());
 						varType = ArrayType.of(varType);
 					} else {
-						return ParseResult.failure("Improperly formatted array declaration", remainder);
+						return ParseResult.failure("Improperly formatted array type", remainder);
 					}
 				} else {
 					moreSubscripts = false;

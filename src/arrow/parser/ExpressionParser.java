@@ -11,8 +11,6 @@ import java.util.function.Function;
 
 import arrow.lexer.ArrowTokenType;
 import lexer.Token;
-import memory.ArrayMemoryEntry;
-import memory.MemoryEntry;
 import memory.ScalarMemoryEntry;
 import parser.ParseResult;
 import parser.tree.BuiltInFunctionNode;
@@ -26,6 +24,7 @@ import typesystem.BoolType;
 import typesystem.CharType;
 import typesystem.GenericArrayType;
 import typesystem.IntegerType;
+import typesystem.Type;
 
 final class ExpressionParser extends AbstractArrowParser {
 
@@ -138,11 +137,30 @@ final class ExpressionParser extends AbstractArrowParser {
 			return ParseResult.of(DataParseTreeNode.of(BoolType.getFalse()), tokens.subList(1, tokens.size()));
 		case LENGTH:
 			return parseLength(tokens);
+		case INPUT:
+			return parseInput(tokens);
 		default:
 			return ParseResult.failure("Unexpected symbol in expression: " + tokens.get(0).getContent(), tokens);
 		}
 	}
 	
+	private ParseResult<ArrowTokenType> parseInput(List<Token<ArrowTokenType>> tokens) {
+		assert !tokens.isEmpty() && tokens.get(0).getType() == ArrowTokenType.INPUT;
+		
+		ParseResult<ArrowTokenType> typeResult = TypeParser.of(indentation, symbolTable).parse(tokens.subList(1, tokens.size()));
+		if (!typeResult.getSuccess()) {
+			return typeResult;
+		}
+		
+		Type inputType = typeResult.getNode().getDataType();
+		
+		if (!Arrays.asList(IntegerType.getInstance(), ArrayType.of(CharType.getInstance())).stream().anyMatch(type -> type.isCompatibleWith(inputType))) {
+			return ParseResult.failure("Unsupported type for input: " + inputType, tokens);
+		}
+		
+		return ParseResult.of(BuiltInFunctionNode.input(inputType), typeResult.getRemainder());
+	}
+
 	private ParseResult<ArrowTokenType> parseLength(List<Token<ArrowTokenType>> tokens) {
 		if (tokens.size() < 2) {
 			return ParseResult.failure("Unexpected end-of-data", tokens);
@@ -164,13 +182,8 @@ final class ExpressionParser extends AbstractArrowParser {
 		assert !tokens.isEmpty() && tokens.get(0).getType() == ArrowTokenType.STRING;
 		
 		String payload = tokens.get(0).getContent();
-		
-		MemoryEntry strEntry = ArrayMemoryEntry.of(ArrayType.of(CharType.getInstance()), Arrays.asList(payload.length()));
-		for (int i = 0; i < payload.length(); i++) {
-			strEntry.copy(Arrays.asList(i), ScalarMemoryEntry.initialized(payload.charAt(i), CharType.getInstance()));
-		}
-		
-		return ParseResult.of(DataParseTreeNode.of(strEntry), tokens.subList(1, tokens.size()));
+				
+		return ParseResult.of(DataParseTreeNode.of(CharType.getInstance().fromString(payload)), tokens.subList(1, tokens.size()));
 	}
 
 	private ParseResult<ArrowTokenType> parseChar(List<Token<ArrowTokenType>> tokens) {

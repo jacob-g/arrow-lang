@@ -1,8 +1,10 @@
 package typesystem;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import memory.ArrayMemoryEntry;
 import memory.MemoryEntry;
 import memory.ScalarMemoryEntry;
 import parser.tree.ParseTreeNodeType;
@@ -64,5 +66,14 @@ public final class CharType implements Type {
 		assert entry.getDataType().isCompatibleWith(this);
 		
 		return entry.isInitialized() ? Character.toString((char)entry.getScalarValue()) : "uninitialized char";
+	}
+	
+	public MemoryEntry fromString(String str) {
+		MemoryEntry strEntry = ArrayMemoryEntry.of(ArrayType.of(CharType.getInstance()), Arrays.asList(str.length()));
+		for (int i = 0; i < str.length(); i++) {
+			strEntry.copy(Arrays.asList(i), ScalarMemoryEntry.initialized(str.charAt(i), CharType.getInstance()));
+		}
+		
+		return strEntry;
 	}
 }
