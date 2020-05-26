@@ -32,6 +32,8 @@ public enum ParseTreeNodeType {
 	OR(new HashSet<>()),
 	NOT(new HashSet<>()),
 	RETURN(new HashSet<>()),
+	ARRAY_LENGTH(new HashSet<>()),
+	PRINT(new HashSet<>()),
 	VARIABLE(new HashSet<>(Arrays.asList(ParseTreeAttributeType.TYPE)));
 	
 	public final Set<ParseTreeAttributeType> VISIBLE_ATTRIBUTES;

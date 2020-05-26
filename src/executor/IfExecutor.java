@@ -27,7 +27,7 @@ class IfExecutor extends AbstractExecutor {
 		ParseTreeNode testNode = node.getAttribute(ParseTreeAttributeType.TEST);
 		MemoryEntry testValue = ExpressionExecutor.of(runtimeData).execute(testNode);
 		
-		assert BoolType.getInstance().canBeAssignedTo(testValue.getDataType());
+		assert BoolType.getInstance().isCompatibleWith(testValue.getDataType());
 		
 		if (testValue.getScalarValue() == 0) {
 			//if the condition is true, then run the body

@@ -32,7 +32,7 @@ class LoopExecutor extends AbstractExecutor {
 			ParseTreeNode testNode = node.getAttribute(ParseTreeAttributeType.TEST);
 			testValue = ExpressionExecutor.of(runtimeData).execute(testNode);
 			
-			assert BoolType.getInstance().canBeAssignedTo(testValue.getDataType());
+			assert BoolType.getInstance().isCompatibleWith(testValue.getDataType());
 		} while (testValue.getScalarValue() != 0);
 		
 		return null;

@@ -45,6 +45,8 @@ class ExpressionExecutor extends AbstractExecutor {
 			return executeUnaryMathOperation(node);
 		case FUNCTION_CALL:
 			return FunctionCallExecutor.of(runtimeData).execute(node);
+		case ARRAY_LENGTH:
+			return ScalarMemoryEntry.initialized(execute(node.getChildren().get(0)).getSize(), IntegerType.getInstance());
 		default:
 			assert false : "Invalid node type passed to expression executor";
 			return null;
@@ -138,14 +140,14 @@ class ExpressionExecutor extends AbstractExecutor {
 			for (ParseTreeNode subscriptNode : node.getChildren()) {
 				MemoryEntry subscriptEntry = execute(subscriptNode);
 				
-				assert subscriptEntry.getDataType().canBeAssignedTo(IntegerType.getInstance());
+				assert subscriptEntry.getDataType().isCompatibleWith(IntegerType.getInstance());
 				
 				varEntry = varEntry.getArrayValue(subscriptEntry.getScalarValue());
 			}
 		}
 		
 		if (!varEntry.isInitialized()) {
-			throw new IllegalStateException("Accessing uninitialized variable");
+			throw new IllegalStateException("Accessing uninitialized variable " + node.getIdentifier());
 		}
 		
 		return varEntry;

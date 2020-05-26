@@ -105,7 +105,7 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 				}
 				
 				//make sure the subscript type is compatible with integer
-				if (!subscriptResult.getNode().getDataType().canBeAssignedTo(IntegerType.getInstance())) {
+				if (!subscriptResult.getNode().getDataType().isCompatibleWith(IntegerType.getInstance())) {
 					return ParseResult.failure("Array subscripts must be integers, found " + subscriptResult.getNode().getDataType(), remainder);
 				}
 				
@@ -159,7 +159,7 @@ final class AssignmentDeclarationParser extends AbstractArrowParser {
 		
 		//make sure the types are compatible
 		Type valueType = valueResult.getNode().getDataType();
-		if (!varResult.getNode().getDataType().canBeAssignedTo(valueType)) {
+		if (!varResult.getNode().getDataType().isCompatibleWith(valueType)) {
 			return ParseResult.failure("Incompatible types for assignment: assigning " + valueType + " to variable of type " + varResult.getNode().getDataType(), tokens);
 		}
 		

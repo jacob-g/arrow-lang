@@ -76,7 +76,7 @@ final class VariableParser extends AbstractArrowParser {
 				}
 				
 				//make sure the subscript type is compatible with integer
-				if (!subscriptResult.getNode().getDataType().canBeAssignedTo(IntegerType.getInstance())) {
+				if (!subscriptResult.getNode().getDataType().isCompatibleWith(IntegerType.getInstance())) {
 					return ParseResult.failure("Array subscripts must be integers, found " + subscriptResult.getNode().getDataType(), remainder);
 				}
 				

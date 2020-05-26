@@ -57,7 +57,7 @@ public final class BoolType implements Type {
 	}
 	
 	@Override
-	public boolean canBeAssignedTo(Type other) {
+	public boolean isCompatibleWith(Type other) {
 		return other == BoolType.getInstance();
 	}
 	
@@ -73,7 +73,7 @@ public final class BoolType implements Type {
 
 	@Override
 	public String toString(MemoryEntry entry) {
-		assert entry.getDataType().canBeAssignedTo(this);
+		assert entry.getDataType().isCompatibleWith(this);
 		
 		return entry.isInitialized() ?
 				entry.getScalarValue() == 0 ?

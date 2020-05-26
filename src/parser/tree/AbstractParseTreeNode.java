@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class AbstractParseTreeNode implements ParseTreeNode {
+abstract class AbstractParseTreeNode implements ParseTreeNode {
 	private Map<ParseTreeAttributeType, ParseTreeNode> attributes = new HashMap<>();
 	
 	protected final void setAttribute(ParseTreeAttributeType attrType, ParseTreeNode node) {

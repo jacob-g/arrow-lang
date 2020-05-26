@@ -4,23 +4,22 @@ import java.util.List;
 import java.util.Optional;
 
 import memory.MemoryEntry;
-import memory.ScalarMemoryEntry;
 import parser.tree.ParseTreeNodeType;
 
-public final class CharType implements Type {
-	private CharType() {
+public class GenericArrayType implements Type {
+	private GenericArrayType() {
+		
 	}
 	
-	private static final CharType instance = new CharType();
+	private static GenericArrayType instance = new GenericArrayType();
 	
-	public static CharType getInstance() {
+	public static GenericArrayType getInstance() {
 		return instance;
 	}
-
+	
 	@Override
 	public Optional<Type> binaryOperationResult(ParseTreeNodeType operation, Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		return Optional.empty();
 	}
 
 	@Override
@@ -30,12 +29,12 @@ public final class CharType implements Type {
 
 	@Override
 	public boolean isCompatibleWith(Type other) {
-		return other == this;
+		return other.isArrayType();
 	}
 
 	@Override
 	public boolean isArrayType() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -46,7 +45,8 @@ public final class CharType implements Type {
 
 	@Override
 	public MemoryEntry newEntry() {
-		return ScalarMemoryEntry.uninitialized(this);
+		assert false;
+		return null;
 	}
 
 	@Override
@@ -55,14 +55,9 @@ public final class CharType implements Type {
 		return null;
 	}
 
-	public String toString() {
-		return "char";
-	}
-
 	@Override
 	public String toString(MemoryEntry entry) {
-		assert entry.getDataType().isCompatibleWith(this);
-		
-		return entry.isInitialized() ? Character.toString((char)entry.getScalarValue()) : "uninitialized char";
+		return "array";
 	}
+
 }

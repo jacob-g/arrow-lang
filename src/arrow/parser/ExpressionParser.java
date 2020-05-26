@@ -15,6 +15,7 @@ import memory.ArrayMemoryEntry;
 import memory.MemoryEntry;
 import memory.ScalarMemoryEntry;
 import parser.ParseResult;
+import parser.tree.BuiltInFunctionNode;
 import parser.tree.DataParseTreeNode;
 import parser.tree.MathOperationTreeNode;
 import parser.tree.ParseTreeNodeType;
@@ -23,6 +24,7 @@ import symboltable.SymbolTableEntry;
 import typesystem.ArrayType;
 import typesystem.BoolType;
 import typesystem.CharType;
+import typesystem.GenericArrayType;
 import typesystem.IntegerType;
 
 final class ExpressionParser extends AbstractArrowParser {
@@ -134,9 +136,28 @@ final class ExpressionParser extends AbstractArrowParser {
 			return ParseResult.of(DataParseTreeNode.of(BoolType.getTrue()), tokens.subList(1, tokens.size()));
 		case FALSE:
 			return ParseResult.of(DataParseTreeNode.of(BoolType.getFalse()), tokens.subList(1, tokens.size()));
+		case LENGTH:
+			return parseLength(tokens);
 		default:
 			return ParseResult.failure("Unexpected symbol in expression: " + tokens.get(0).getContent(), tokens);
 		}
+	}
+	
+	private ParseResult<ArrowTokenType> parseLength(List<Token<ArrowTokenType>> tokens) {
+		if (tokens.size() < 2) {
+			return ParseResult.failure("Unexpected end-of-data", tokens);
+		}
+		
+		ParseResult<ArrowTokenType> exprParseResult = parse(tokens.subList(1, tokens.size()));
+		if (!exprParseResult.getSuccess()) {
+			return exprParseResult;
+		}
+		
+		if (!GenericArrayType.getInstance().isCompatibleWith(exprParseResult.getNode().getDataType())) {
+			return ParseResult.failure("Argument to length must be array, found " + exprParseResult.getNode().getType(), tokens);
+		}
+		
+		return ParseResult.of(BuiltInFunctionNode.arrayLength(exprParseResult.getNode()), exprParseResult.getRemainder());
 	}
 	
 	private ParseResult<ArrowTokenType> parseString(List<Token<ArrowTokenType>> tokens) {

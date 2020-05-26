@@ -55,7 +55,7 @@ public final class ScalarMemoryEntry implements MemoryEntry {
 
 	@Override
 	public void copy(MemoryEntry other) {
-		assert getDataType().canBeAssignedTo(other.getDataType());
+		assert getDataType().isCompatibleWith(other.getDataType());
 		
 		this.initialized = true;
 		this.value = other.getScalarValue();

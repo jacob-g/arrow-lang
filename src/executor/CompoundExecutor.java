@@ -3,7 +3,6 @@ package executor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import memory.MemoryEntry;
 import memory.RuntimeDataStack;
@@ -48,6 +47,12 @@ public class CompoundExecutor extends AbstractExecutor {
 			case EMPTY:
 				//do nothing
 				break;
+			case FUNCTION_CALL:
+				ExpressionExecutor.of(runtimeData).execute(child);
+				break;
+			case PRINT:
+				System.out.println(ExpressionExecutor.of(runtimeData).execute(child.getChildren().get(0)));
+				break;
 			default:
 				assert false;
 				return null;
@@ -80,7 +85,7 @@ public class CompoundExecutor extends AbstractExecutor {
 			for (ParseTreeNode subscriptNode : node.getChildren()) {
 				MemoryEntry subscriptEntry = ExpressionExecutor.of(runtimeData).execute(subscriptNode);
 				
-				assert subscriptEntry.getDataType().canBeAssignedTo(IntegerType.getInstance());
+				assert subscriptEntry.getDataType().isCompatibleWith(IntegerType.getInstance());
 				
 				subscripts.add(subscriptEntry.getScalarValue());
 			}
@@ -106,12 +111,9 @@ public class CompoundExecutor extends AbstractExecutor {
 			for (ParseTreeNode subscriptNode : varNode.getChildren()) {
 				subscripts.add(ExpressionExecutor.of(runtimeData).execute(subscriptNode).getScalarValue());
 			}
-			
-			System.out.println("Assigning to variable: " + identifier + subscripts.stream().map(s -> "[" + s + "]").collect(Collectors.joining()) + " value " + value);
-			
+						
 			runtimeData.lookup(identifier).copy(subscripts, value);
 		} else {
-			System.out.println("Assigning to variable: " + identifier + " value " + value.getScalarValue());
 			runtimeData.lookup(identifier).copy(value);
 		}
 		

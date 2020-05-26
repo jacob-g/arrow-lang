@@ -1,8 +1,11 @@
 package executor;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import memory.MemoryEntry;
@@ -23,9 +26,11 @@ final class FunctionCallExecutor extends AbstractExecutor {
 		return new FunctionCallExecutor(runtimeData);
 	}
 
+	private static final Set<ParseTreeNodeType> legalTypes = new HashSet<>(Arrays.asList(ParseTreeNodeType.FUNCTION_CALL));
+	
 	@Override
 	public MemoryEntry execute(ParseTreeNode node) {
-		if (node.getType() != ParseTreeNodeType.FUNCTION_CALL) {
+		if (!legalTypes.contains(ParseTreeNodeType.FUNCTION_CALL)) {
 			throw new IllegalArgumentException("Function call needs to be on function call node");
 		}
 		
@@ -48,7 +53,17 @@ final class FunctionCallExecutor extends AbstractExecutor {
 		}
 		
 		//now actually run the body
-		MemoryEntry outValue = CompoundExecutor.of(runtimeData).execute(functionDefinition);
+		MemoryEntry outValue; 
+		
+		switch (node.getType()) {
+		case FUNCTION_CALL:
+			outValue = CompoundExecutor.of(runtimeData).execute(functionDefinition);
+			break;
+		default:
+			assert false;
+			outValue = null;
+		}
+		
 		
 		runtimeData.pop();
 		

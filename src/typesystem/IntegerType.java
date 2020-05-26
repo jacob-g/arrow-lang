@@ -62,7 +62,7 @@ public final class IntegerType implements Type {
 	}
 
 	@Override
-	public boolean canBeAssignedTo(Type other) {
+	public boolean isCompatibleWith(Type other) {
 		return other == IntegerType.getInstance();
 	}
 	
@@ -78,7 +78,7 @@ public final class IntegerType implements Type {
 
 	@Override
 	public String toString(MemoryEntry entry) {
-		assert entry.getDataType().canBeAssignedTo(this);
+		assert entry.getDataType().isCompatibleWith(this);
 		
 		return entry.isInitialized() ? Integer.toString(entry.getScalarValue()) : "uninitialized int";
 	}

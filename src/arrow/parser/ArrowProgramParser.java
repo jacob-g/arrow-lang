@@ -3,6 +3,7 @@ package arrow.parser;
 import java.util.LinkedList;
 import java.util.List;
 
+import arrow.BuiltInData;
 import arrow.lexer.ArrowTokenType;
 import lexer.Token;
 import parser.ParseResult;
@@ -11,18 +12,13 @@ import parser.tree.ParseTreeNode;
 import parser.tree.ProgramNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntryType;
-import typesystem.BoolType;
-import typesystem.CharType;
-import typesystem.IntegerType;
 
 public class ArrowProgramParser extends AbstractArrowParser {
 
 	public ArrowProgramParser() {
 		super(0, new StaticSymbolTableStack());
 	
-		symbolTable.add("int", SymbolTableEntryType.TYPE, IntegerType.getInstance());
-		symbolTable.add("bool", SymbolTableEntryType.TYPE, BoolType.getInstance());
-		symbolTable.add("char", SymbolTableEntryType.TYPE, CharType.getInstance());
+		BuiltInData.TYPES.forEach((name, dataType) -> symbolTable.add(name, SymbolTableEntryType.TYPE, dataType));
 	}
 
 	@Override

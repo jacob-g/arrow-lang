@@ -6,6 +6,7 @@ import java.util.Objects;
 import arrow.lexer.ArrowTokenType;
 import lexer.Token;
 import parser.ParseResult;
+import parser.tree.BuiltInFunctionNode;
 import parser.tree.EmptyParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
@@ -102,7 +103,19 @@ final class LineParser extends AbstractArrowParser {
 	}
 	
 	private ParseResult<ArrowTokenType> parseKeyword(List<Token<ArrowTokenType>> tokens) {
-		assert tokens != null && !tokens.isEmpty();
-		return null;
+		assert !tokens.isEmpty();
+		
+		switch (tokens.get(0).getType()) {
+		case PRINT:
+			ParseResult<ArrowTokenType> exprResult = ExpressionParser.of(indentation, symbolTable).parse(tokens.subList(1, tokens.size()));
+			if (!exprResult.getSuccess()) {
+				return exprResult;
+			}
+			
+			return ParseResult.of(BuiltInFunctionNode.print(exprResult.getNode()), exprResult.getRemainder());
+		default:
+			assert false;
+			return null;
+		}
 	}
 }

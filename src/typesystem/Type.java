@@ -9,7 +9,7 @@ import parser.tree.ParseTreeNodeType;
 public interface Type {
 	Optional<Type> binaryOperationResult(ParseTreeNodeType operation, Type other);
 	Optional<Type> unaryOperationResult(ParseTreeNodeType operation);
-	boolean canBeAssignedTo(Type other);
+	boolean isCompatibleWith(Type other);
 	boolean isArrayType();
 	Type getUnderlyingType();
 	MemoryEntry newEntry();

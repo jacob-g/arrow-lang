@@ -72,6 +72,8 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 	public void copy(MemoryEntry other) {
 		this.size = other.getSize();
 		
+		this.initialized = true;
+		
 		this.subMemoryEntries = new ArrayList<>(other.getSize());
 		
 		for (int i = 0; i < other.getSize(); i++) {

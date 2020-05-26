@@ -84,7 +84,7 @@ final class LoopParser extends AbstractArrowParser {
 			return conditionResult;
 		}
 		//make sure the termination condition is actually a boolean
-		if (!conditionResult.getNode().getDataType().canBeAssignedTo(BoolType.getInstance())) {
+		if (!conditionResult.getNode().getDataType().isCompatibleWith(BoolType.getInstance())) {
 			return ParseResult.failure("Loop termination condition must be a boolean", remainder);
 		}
 		

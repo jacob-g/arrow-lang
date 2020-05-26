@@ -44,8 +44,8 @@ public final class ArrayType implements Type {
 	}
 
 	@Override
-	public boolean canBeAssignedTo(Type other) {
-		return other.isArrayType() && getUnderlyingType().canBeAssignedTo(other.getUnderlyingType());
+	public boolean isCompatibleWith(Type other) {
+		return other.isArrayType() && getUnderlyingType().isCompatibleWith(other.getUnderlyingType());
 	}
 
 	public MemoryEntry newEntry() {
@@ -62,7 +62,7 @@ public final class ArrayType implements Type {
 
 	@Override
 	public String toString(MemoryEntry entry) {
-		assert entry.getDataType().canBeAssignedTo(this);
+		assert entry.getDataType().isCompatibleWith(this);
 		
 		if (entry.isInitialized()) {
 			List<MemoryEntry> subEntries = new LinkedList<>();
@@ -73,7 +73,7 @@ public final class ArrayType implements Type {
 			return subEntries.stream()
 					.map(MemoryEntry::toString)
 					.collect(
-							 (Collector<CharSequence, ?, String>)(underlyingType.canBeAssignedTo(CharType.getInstance()) 
+							 (Collector<CharSequence, ?, String>)(underlyingType.isCompatibleWith(CharType.getInstance()) 
 									? Collectors.joining() 
 											: Collectors.joining(",", "[", "]")));
 		} else {
