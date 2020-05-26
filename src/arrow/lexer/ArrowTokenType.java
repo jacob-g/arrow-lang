@@ -13,6 +13,8 @@ public enum ArrowTokenType {
 	MAIN(ArrowTokenCategory.KEYWORD),
 	TRUE(ArrowTokenCategory.KEYWORD),
 	FALSE(ArrowTokenCategory.KEYWORD),
+	CHAR(ArrowTokenCategory.CHAR),
+	STRING(ArrowTokenCategory.STRING),
 	NUMBER(ArrowTokenCategory.NUMBER),
 	
 	//control flow symbols

@@ -1,5 +1,6 @@
 package arrow.lexer;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import lexer.TokenLexResult;
@@ -10,6 +11,7 @@ import lexer.specs.MultipleOptionTokenSpec;
 import lexer.specs.RepeatedTokenSpec;
 import lexer.specs.SequenceTokenSpec;
 import lexer.specs.TokenSpec;
+import lexer.specs.TransformSpec;
 import lexer.specs.TyperSpec;
 
 public class ArrowLexer {
@@ -43,13 +45,27 @@ public class ArrowLexer {
 			CombinerSpec.of(RepeatedTokenSpec.of(TokenSpec.getDigitSpec(), true)), 
 			ArrowTokenType.NUMBER);
 	
+	private static final TokenSpec<ArrowTokenType> charSpec = TyperSpec.of(
+			TransformSpec.of(
+					SequenceTokenSpec.of(FixedStringTokenSpec.of("'"), CharPredicateSpec.of(c -> c != '\''), FixedStringTokenSpec.of("'")),
+					tokens -> Arrays.asList(tokens.get(1))),
+			ArrowTokenType.CHAR);
+	
+	private static final TokenSpec<ArrowTokenType> stringSpec = TyperSpec.of(
+			CombinerSpec.of(
+					TransformSpec.of(
+							SequenceTokenSpec.of(FixedStringTokenSpec.of("\""), RepeatedTokenSpec.of(CharPredicateSpec.of(c -> c != '"'), false), FixedStringTokenSpec.of("\"")),
+							tokens -> tokens.subList(1, tokens.size() - 1))
+					),
+			ArrowTokenType.STRING);
+	
 	private static final TokenSpec<ArrowTokenType> commentSpec = TyperSpec.of(
 			CombinerSpec.of(SequenceTokenSpec.of(
 					FixedStringTokenSpec.of("//"), 
 					RepeatedTokenSpec.of(CharPredicateSpec.of(c -> c != '\n'), false),
 					FixedStringTokenSpec.of("\n"))), ArrowTokenType.NEWLINE);
 	
-	private static final TokenSpec<ArrowTokenType> allowedWordSpec = MultipleOptionTokenSpec.of(commentSpec, keywordSpec, symbolSpec, numberSpec, identifierSpec, newLineSpec, whiteSpaceSpec);
+	private static final TokenSpec<ArrowTokenType> allowedWordSpec = MultipleOptionTokenSpec.of(commentSpec, keywordSpec, symbolSpec, numberSpec, charSpec, stringSpec, identifierSpec, newLineSpec, whiteSpaceSpec);
 	private static final TokenSpec<ArrowTokenType> programSpec = RepeatedTokenSpec.of(allowedWordSpec, true);
 	
 	public static TokenLexResult<ArrowTokenType> parse(String program) {

@@ -8,6 +8,7 @@ import lexer.Token;
 import parser.ParseResult;
 import parser.tree.EmptyParseTreeNode;
 import symboltable.StaticSymbolTableStack;
+import symboltable.SymbolTableEntry;
 
 final class LineParser extends AbstractArrowParser {
 	private LineParser(int indentation, StaticSymbolTableStack symbolTable) {
@@ -28,7 +29,7 @@ final class LineParser extends AbstractArrowParser {
 		ParseResult<ArrowTokenType> lineParseResult;
 		switch (tokens.get(0).getType().CATEGORY) {
 		case IDENTIFIER:
-			lineParseResult = new AssignmentDeclarationParser(indentation, symbolTable).parse(tokens);
+			lineParseResult = parseIdentifier(tokens);
 			break;
 		case KEYWORD:
 			lineParseResult = parseKeyword(tokens);
@@ -65,6 +66,28 @@ final class LineParser extends AbstractArrowParser {
 		return endOfLineResult.getSuccess() ? ParseResult.of(lineParseResult.getNode(), endOfLineResult.getRemainder()) : endOfLineResult;
 	}
 	
+	private ParseResult<ArrowTokenType> parseIdentifier(List<Token<ArrowTokenType>> tokens) {
+		assert !tokens.isEmpty();
+		
+		String identifier = tokens.get(0).getContent();
+		
+		if (!symbolTable.contains(identifier)) {
+			return ParseResult.failure("Undefined identifier: " + identifier, tokens);
+		}
+		
+		SymbolTableEntry idEntry = symbolTable.lookup(identifier);
+		switch (idEntry.getType()) {
+		case VARIABLE:
+		case TYPE:
+			return new AssignmentDeclarationParser(indentation, symbolTable).parse(tokens);
+		case FUNCTION:
+			return ExpressionParser.of(indentation, symbolTable).parse(tokens);
+		default:
+			assert false;
+			return null;
+		}
+	}
+
 	private ParseResult<ArrowTokenType> parseSymbol(List<Token<ArrowTokenType>> tokens) {
 		assert tokens != null && !tokens.isEmpty();
 		

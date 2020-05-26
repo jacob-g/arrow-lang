@@ -11,6 +11,8 @@ import java.util.function.Function;
 
 import arrow.lexer.ArrowTokenType;
 import lexer.Token;
+import memory.ArrayMemoryEntry;
+import memory.MemoryEntry;
 import memory.ScalarMemoryEntry;
 import parser.ParseResult;
 import parser.tree.DataParseTreeNode;
@@ -18,7 +20,9 @@ import parser.tree.MathOperationTreeNode;
 import parser.tree.ParseTreeNodeType;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
+import typesystem.ArrayType;
 import typesystem.BoolType;
+import typesystem.CharType;
 import typesystem.IntegerType;
 
 final class ExpressionParser extends AbstractArrowParser {
@@ -118,6 +122,10 @@ final class ExpressionParser extends AbstractArrowParser {
 		switch (tokens.get(0).getType()) {
 		case IDENTIFIER:
 			return parseIdentifier(tokens);
+		case CHAR:
+			return parseChar(tokens);
+		case STRING:
+			return parseString(tokens);
 		case NUMBER:
 			return parseNumber(tokens);
 		case OPEN_PAREN:
@@ -131,6 +139,25 @@ final class ExpressionParser extends AbstractArrowParser {
 		}
 	}
 	
+	private ParseResult<ArrowTokenType> parseString(List<Token<ArrowTokenType>> tokens) {
+		assert !tokens.isEmpty() && tokens.get(0).getType() == ArrowTokenType.STRING;
+		
+		String payload = tokens.get(0).getContent();
+		
+		MemoryEntry strEntry = ArrayMemoryEntry.of(ArrayType.of(CharType.getInstance()), Arrays.asList(payload.length()));
+		for (int i = 0; i < payload.length(); i++) {
+			strEntry.copy(Arrays.asList(i), ScalarMemoryEntry.initialized(payload.charAt(i), CharType.getInstance()));
+		}
+		
+		return ParseResult.of(DataParseTreeNode.of(strEntry), tokens.subList(1, tokens.size()));
+	}
+
+	private ParseResult<ArrowTokenType> parseChar(List<Token<ArrowTokenType>> tokens) {
+		assert !tokens.isEmpty() && tokens.get(0).getType() == ArrowTokenType.CHAR;
+		
+		return ParseResult.of(DataParseTreeNode.of(ScalarMemoryEntry.initialized((int)tokens.get(0).getContent().charAt(0), CharType.getInstance())), tokens.subList(1, tokens.size()));
+	}
+
 	private ParseResult<ArrowTokenType> parseUnary(List<Token<ArrowTokenType>> tokens) {
 		assert !tokens.isEmpty() && UNARY_OPERATORS.contains(tokens.get(0).getType());
 		

@@ -12,6 +12,7 @@ import parser.tree.ProgramNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntryType;
 import typesystem.BoolType;
+import typesystem.CharType;
 import typesystem.IntegerType;
 
 public class ArrowProgramParser extends AbstractArrowParser {
@@ -19,9 +20,9 @@ public class ArrowProgramParser extends AbstractArrowParser {
 	public ArrowProgramParser() {
 		super(0, new StaticSymbolTableStack());
 	
-		//TODO: have a definition for built-in types
 		symbolTable.add("int", SymbolTableEntryType.TYPE, IntegerType.getInstance());
 		symbolTable.add("bool", SymbolTableEntryType.TYPE, BoolType.getInstance());
+		symbolTable.add("char", SymbolTableEntryType.TYPE, CharType.getInstance());
 	}
 
 	@Override
