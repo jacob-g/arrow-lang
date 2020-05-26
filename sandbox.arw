@@ -1,18 +1,23 @@
 function
-/--> int indexOf(char[] str, char c)
-| int index
-| index = -1
-| /--< (length str) == 0
-| | int testIndex
-| | testIndex = -1
+/--> char[] concat(char[] first, char[] second)
+| char[] result[length first + length second]
+| /--< length first == 0
+| | int index
+| | index = 0
 | | /-->
-| | | testIndex = testIndex + 1
-| | \--< str[testIndex] != c and testIndex < length str - 1
-| | /--< str[testIndex] != c
-| | | index = testIndex
-| | \-->
+| | | result[index] = first[index]
+| | | index = index + 1
+| | \--< index < length first
 | \-->
-^ index
+| /--< length second == 0
+| | int index
+| | index = 0
+| | /-->
+| | | result[length first + index] = second[index]
+| | | index = index + 1
+| | \--< index < length second
+| \-->
+^ result
 
 main
-print "Index: ", indexOf("abc", 'f')
+print concat("", "1")
