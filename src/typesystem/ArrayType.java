@@ -1,8 +1,11 @@
 package typesystem;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import memory.ArrayMemoryEntry;
 import memory.MemoryEntry;
@@ -55,5 +58,26 @@ public final class ArrayType implements Type {
 	
 	public String toString() {
 		return underlyingType.toString() + "[]";
+	}
+
+	@Override
+	public String toString(MemoryEntry entry) {
+		assert entry.getDataType().canBeAssignedTo(this);
+		
+		if (entry.isInitialized()) {
+			List<MemoryEntry> subEntries = new LinkedList<>();
+			for (int i = 0; i < entry.getSize(); i++) {
+				subEntries.add(entry.getArrayValue(i));
+			}
+			
+			return subEntries.stream()
+					.map(MemoryEntry::toString)
+					.collect(
+							 (Collector<CharSequence, ?, String>)(underlyingType.canBeAssignedTo(CharType.getInstance()) 
+									? Collectors.joining() 
+											: Collectors.joining(",", "[", "]")));
+		} else {
+			return "uninitialized array of type " + toString();
+		}
 	}
 }

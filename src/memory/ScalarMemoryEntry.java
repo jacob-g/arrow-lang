@@ -84,6 +84,6 @@ public final class ScalarMemoryEntry implements MemoryEntry {
 	}
 	
 	public String toString() {
-		return initialized ? Integer.toString(value) : "uninitialized scalar";
+		return dataType.toString(this);
 	}
 }

@@ -75,4 +75,11 @@ public final class IntegerType implements Type {
 		assert false;
 		return null;
 	}
+
+	@Override
+	public String toString(MemoryEntry entry) {
+		assert entry.getDataType().canBeAssignedTo(this);
+		
+		return entry.isInitialized() ? Integer.toString(entry.getScalarValue()) : "uninitialized int";
+	}
 }

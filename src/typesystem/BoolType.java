@@ -70,4 +70,15 @@ public final class BoolType implements Type {
 		assert false;
 		return null;
 	}
+
+	@Override
+	public String toString(MemoryEntry entry) {
+		assert entry.getDataType().canBeAssignedTo(this);
+		
+		return entry.isInitialized() ?
+				entry.getScalarValue() == 0 ?
+						"false" :
+						"true"
+				: "unintialized bool";
+	}
 }

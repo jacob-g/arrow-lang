@@ -14,4 +14,5 @@ public interface Type {
 	Type getUnderlyingType();
 	MemoryEntry newEntry();
 	MemoryEntry newEntry(List<Integer> sizes);
+	String toString(MemoryEntry entry);
 }

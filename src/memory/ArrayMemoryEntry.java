@@ -3,7 +3,6 @@ package memory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import typesystem.Type;
 
@@ -144,6 +143,6 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 	}
 
 	public String toString() {
-		return initialized ? subMemoryEntries.stream().map(entry -> entry.toString()).collect(Collectors.joining(",", "[", "]"))  : "uninitialized array";
+		return dataType.toString(this);
 	}
 }

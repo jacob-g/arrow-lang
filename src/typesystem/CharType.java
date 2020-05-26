@@ -58,4 +58,11 @@ public final class CharType implements Type {
 	public String toString() {
 		return "char";
 	}
+
+	@Override
+	public String toString(MemoryEntry entry) {
+		assert entry.getDataType().canBeAssignedTo(this);
+		
+		return entry.isInitialized() ? Character.toString((char)entry.getScalarValue()) : "uninitialized char";
+	}
 }
