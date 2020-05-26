@@ -54,3 +54,7 @@ testNum = input int
 | | print "Not prime"
 | \-->
 \-->
+
+/--< not (testNum < 0 or testNum > max - 1)
+| print "Out of bounds"
+\-->

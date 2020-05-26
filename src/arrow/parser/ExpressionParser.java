@@ -166,7 +166,7 @@ final class ExpressionParser extends AbstractArrowParser {
 			return ParseResult.failure("Unexpected end-of-data", tokens);
 		}
 		
-		ParseResult<ArrowTokenType> exprParseResult = parse(tokens.subList(1, tokens.size()));
+		ParseResult<ArrowTokenType> exprParseResult = parseFactor(tokens.subList(1, tokens.size()));
 		if (!exprParseResult.getSuccess()) {
 			return exprParseResult;
 		}

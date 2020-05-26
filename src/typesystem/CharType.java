@@ -1,8 +1,10 @@
 package typesystem;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import memory.ArrayMemoryEntry;
 import memory.MemoryEntry;
@@ -19,10 +21,11 @@ public final class CharType implements Type {
 		return instance;
 	}
 
+	private static final Set<ParseTreeNodeType> allowedBinaryOperationsBoolean = new HashSet<>(Arrays.asList(ParseTreeNodeType.GREATER_THAN, ParseTreeNodeType.LESS_THAN, ParseTreeNodeType.EQUAL, ParseTreeNodeType.NOT_EQUAL));
+	
 	@Override
 	public Optional<Type> binaryOperationResult(ParseTreeNodeType operation, Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		return other.isCompatibleWith(this) && allowedBinaryOperationsBoolean.contains(operation) ? Optional.of(BoolType.getInstance()) : Optional.empty();
 	}
 
 	@Override
