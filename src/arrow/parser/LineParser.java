@@ -1,5 +1,6 @@
 package arrow.parser;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,6 +9,7 @@ import lexer.Token;
 import parser.ParseResult;
 import parser.tree.BuiltInFunctionNode;
 import parser.tree.EmptyParseTreeNode;
+import parser.tree.ParseTreeNode;
 import symboltable.StaticSymbolTableStack;
 import symboltable.SymbolTableEntry;
 
@@ -107,15 +109,37 @@ final class LineParser extends AbstractArrowParser {
 		
 		switch (tokens.get(0).getType()) {
 		case PRINT:
-			ParseResult<ArrowTokenType> exprResult = ExpressionParser.of(indentation, symbolTable).parse(tokens.subList(1, tokens.size()));
-			if (!exprResult.getSuccess()) {
-				return exprResult;
-			}
-			
-			return ParseResult.of(BuiltInFunctionNode.print(exprResult.getNode()), exprResult.getRemainder());
+			return parsePrint(tokens);
 		default:
 			assert false;
 			return null;
 		}
+	}
+	
+	private ParseResult<ArrowTokenType> parsePrint(List<Token<ArrowTokenType>> tokens) {
+		assert tokens != null && !tokens.isEmpty();
+		
+		List<Token<ArrowTokenType>> remainder = tokens.subList(1, tokens.size());
+		
+		List<ParseTreeNode> values = new LinkedList<>();
+		
+		boolean moreValues = true;
+		while (moreValues) {
+			ParseResult<ArrowTokenType> exprResult = ExpressionParser.of(indentation, symbolTable).parse(remainder);
+			if (!exprResult.getSuccess()) {
+				return exprResult;
+			}
+			
+			values.add(exprResult.getNode());
+			
+			remainder = exprResult.getRemainder();
+			
+			moreValues = exprResult.getRemainder().size() > 2 && remainder.get(0).getType() == ArrowTokenType.COMMA;
+			if (moreValues) {
+				remainder = remainder.subList(1, remainder.size());
+			}
+		}
+		
+		return ParseResult.of(BuiltInFunctionNode.print(values), remainder);
 	}
 }

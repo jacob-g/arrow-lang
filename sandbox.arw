@@ -15,4 +15,4 @@ function
 ^ index
 
 main
-print indexOf("abc", 'f')
+print "Index: ", indexOf("abc", 'f')

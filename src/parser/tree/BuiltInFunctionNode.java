@@ -12,14 +12,14 @@ import typesystem.IntegerType;
 import typesystem.Type;
 
 public class BuiltInFunctionNode extends AbstractParseTreeNode {
-	private final ParseTreeNode value;
+	private final List<ParseTreeNode> values;
 	private final ParseTreeNodeType type;
 	private final Type returnType;
 	
-	private BuiltInFunctionNode(ParseTreeNode value, ParseTreeNodeType type, Type returnType) {
+	private BuiltInFunctionNode(List<ParseTreeNode> values, ParseTreeNodeType type, Type returnType) {
 		assert allowedTypes.contains(type);
 		
-		this.value = value;
+		this.values = values;
 		this.type = type;
 		this.returnType = returnType;
 	}
@@ -28,9 +28,9 @@ public class BuiltInFunctionNode extends AbstractParseTreeNode {
 	
 	@Override
 	public List<ParseTreeNode> getChildren() {
-		assert value != null;
+		assert values != null : "getting children where none exist";
 		
-		return Arrays.asList(value);
+		return values;
 	}
 
 	@Override
@@ -60,13 +60,13 @@ public class BuiltInFunctionNode extends AbstractParseTreeNode {
 	public static ParseTreeNode arrayLength(ParseTreeNode node) {
 		Objects.requireNonNull(node);
 		
-		return new BuiltInFunctionNode(node, ParseTreeNodeType.ARRAY_LENGTH, IntegerType.getInstance());
+		return new BuiltInFunctionNode(Arrays.asList(node), ParseTreeNodeType.ARRAY_LENGTH, IntegerType.getInstance());
 	}
 
-	public static ParseTreeNode print(ParseTreeNode node) {
-		Objects.requireNonNull(node);
+	public static ParseTreeNode print(List<ParseTreeNode> nodes) {
+		Objects.requireNonNull(nodes);
 		
-		return new BuiltInFunctionNode(node, ParseTreeNodeType.PRINT, null);
+		return new BuiltInFunctionNode(nodes, ParseTreeNodeType.PRINT, null);
 	}
 	
 	public static ParseTreeNode input(Type returnType) {

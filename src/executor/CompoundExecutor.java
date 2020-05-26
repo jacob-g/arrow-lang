@@ -51,7 +51,10 @@ public class CompoundExecutor extends AbstractExecutor {
 				ExpressionExecutor.of(runtimeData).execute(child);
 				break;
 			case PRINT:
-				System.out.println(ExpressionExecutor.of(runtimeData).execute(child.getChildren().get(0)));
+				for (ParseTreeNode printNode : child.getChildren()) {
+					System.out.print(ExpressionExecutor.of(runtimeData).execute(printNode));
+				}
+				System.out.println();
 				break;
 			default:
 				assert false;
