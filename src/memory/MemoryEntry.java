@@ -13,4 +13,5 @@ public interface MemoryEntry {
 	MemoryEntry getArrayValue(int index);
 	boolean isInitialized();
 	boolean isArray();
+	boolean isInBounds(int index);
 }

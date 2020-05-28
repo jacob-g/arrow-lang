@@ -2,7 +2,6 @@ package executor;
 
 import java.util.Objects;
 
-import memory.MemoryEntry;
 import memory.RuntimeDataStack;
 import parser.tree.ParseTreeAttributeType;
 import parser.tree.ParseTreeNode;
@@ -21,21 +20,33 @@ class LoopExecutor extends AbstractExecutor {
 	}
 
 	@Override
-	public MemoryEntry execute(ParseTreeNode node) {
+	public ExecutionResult execute(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.LOOP;
 		
-		MemoryEntry testValue;
+		ExecutionResult testResult;
 		do {
+			//run the body
 			runtimeData.push();
-			CompoundExecutor.of(runtimeData).execute(node);
-			runtimeData.pop();
-			ParseTreeNode testNode = node.getAttribute(ParseTreeAttributeType.TEST);
-			testValue = ExpressionExecutor.of(runtimeData).execute(testNode);
 			
-			assert BoolType.getInstance().isCompatibleWith(testValue.getDataType());
-		} while (testValue.getScalarValue() != 0);
+			ExecutionResult result = CompoundExecutor.of(runtimeData).execute(node);
+			if (!result.getSuccess()) {
+				return result;
+			}
+			
+			runtimeData.pop();
+			
+			//test whether or not to continue
+			ParseTreeNode testNode = node.getAttribute(ParseTreeAttributeType.TEST);
+			
+			testResult = ExpressionExecutor.of(runtimeData).execute(testNode);
+			if (!testResult.getSuccess()) {
+				return testResult;
+			}
+			
+			assert BoolType.getInstance().isCompatibleWith(testResult.getValue().getDataType());
+		} while (testResult.getValue().getScalarValue() != 0);
 		
-		return null;
+		return ExecutionResult.voidResult();
 	}
 
 }

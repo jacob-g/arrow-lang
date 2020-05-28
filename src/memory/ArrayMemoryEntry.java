@@ -99,11 +99,8 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 		return true;
 	}
 	
-	private void requireInBounds(int index) {
-		if (index < 0 || index >= size) {
-			//TODO: have a way to handle runtime errors
-			throw new IndexOutOfBoundsException("Invalid index for array: " + index);
-		}
+	public boolean isInBounds(int index) {
+		return index >= 0 && index < size;
 	}
 
 	@Override
@@ -116,7 +113,7 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 		} else {
 			int index = indices.get(0);
 			
-			requireInBounds(index);
+			assert isInBounds(index);
 				
 			if (subMemoryEntries.get(index).isArray()) {
 				assert indices.size() >= 1;
@@ -132,7 +129,7 @@ public final class ArrayMemoryEntry implements MemoryEntry {
 
 	@Override
 	public MemoryEntry getArrayValue(int index) {			
-		requireInBounds(index);
+		assert isInBounds(index);
 			
 		return subMemoryEntries.get(index);
 	}

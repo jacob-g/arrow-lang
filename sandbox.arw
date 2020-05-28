@@ -20,4 +20,4 @@ function
 ^ result
 
 main
-print concat("", "1")
+print concat("abc", "123")

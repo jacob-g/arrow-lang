@@ -1,6 +1,5 @@
 package executor;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -26,12 +25,12 @@ class ExpressionExecutor extends AbstractExecutor {
 	}
 	
 	@Override
-	public MemoryEntry execute(ParseTreeNode node) {
+	public ExecutionResult execute(ParseTreeNode node) {
 		switch (node.getType()) {
 		case VARIABLE:
 			return executeVariable(node);
 		case DATA:
-			return node.getData();
+			return ExecutionResult.success(node.getData());
 		case ADD:
 		case SUBTRACT:
 		case MULTIPLY:
@@ -50,7 +49,7 @@ class ExpressionExecutor extends AbstractExecutor {
 		case FUNCTION_CALL:
 			return FunctionCallExecutor.of(runtimeData).execute(node);
 		case ARRAY_LENGTH:
-			return ScalarMemoryEntry.initialized(execute(node.getChildren().get(0)).getSize(), IntegerType.getInstance());
+			return executeArrayLength(node);
 		case INPUT:
 			return executeInput(node.getDataType());
 		default:
@@ -59,7 +58,16 @@ class ExpressionExecutor extends AbstractExecutor {
 		}
 	}
 	
-	private MemoryEntry executeInput(Type dataType) {
+	private ExecutionResult executeArrayLength(ParseTreeNode node) {
+		ExecutionResult arrayResult = execute(node.getChildren().get(0));
+		if (!arrayResult.getSuccess()) {
+			return arrayResult;
+		}
+		
+		return ExecutionResult.success(ScalarMemoryEntry.initialized(arrayResult.getValue().getSize(), IntegerType.getInstance()));
+	}
+
+	private ExecutionResult executeInput(Type dataType) {
 		Scanner scan = new Scanner(System.in);
 		
 		MemoryEntry result = null;
@@ -75,28 +83,30 @@ class ExpressionExecutor extends AbstractExecutor {
 		
 		assert result != null : "unhandled data type for input";
 		
-		return result;
+		return ExecutionResult.success(result);
 	}
 
 	private int boolToInt(boolean x) {
 		return x ? 1 : 0;
 	}
 	
-	private MemoryEntry executeBinaryMathOperation(ParseTreeNode node) {
+	private ExecutionResult executeBinaryMathOperation(ParseTreeNode node) {
 		assert node.getChildren().size() == 2;
 		
-		MemoryEntry firstOperand = execute(node.getChildren().get(0));
-		MemoryEntry secondOperand = execute(node.getChildren().get(1));
-		
-		if (Arrays.asList(firstOperand, secondOperand).stream().anyMatch(operand -> !operand.isInitialized())) {
-			//TODO: establish architecture for runtime errors
-			throw new IllegalStateException("Working with undefined variables");
+		ExecutionResult firstOperand = execute(node.getChildren().get(0));
+		if (!firstOperand.getSuccess()) {
+			return firstOperand;
 		}
 		
-		assert !firstOperand.isArray() && !secondOperand.isArray() : "attempting to perform math operations on array";
+		ExecutionResult secondOperand = execute(node.getChildren().get(1));
+		if (!secondOperand.getSuccess()) {
+			return secondOperand;
+		}
 		
-		int op1 = firstOperand.getScalarValue();
-		int op2 = secondOperand.getScalarValue();
+		assert !firstOperand.getValue().isArray() && !secondOperand.getValue().isArray() : "attempting to perform math operations on array";
+		
+		int op1 = firstOperand.getValue().getScalarValue();
+		int op2 = secondOperand.getValue().getScalarValue();
 		
 		int out = 0;
 				
@@ -127,20 +137,18 @@ class ExpressionExecutor extends AbstractExecutor {
 			assert false;
 		}
 		
-		return ScalarMemoryEntry.initialized(out, node.getDataType());
+		return ExecutionResult.success(ScalarMemoryEntry.initialized(out, node.getDataType()));
 	}
 	
-	private MemoryEntry executeUnaryMathOperation(ParseTreeNode node) {
+	private ExecutionResult executeUnaryMathOperation(ParseTreeNode node) {
 		assert node.getChildren().size() == 1;
 		
-		MemoryEntry operand = execute(node.getChildren().get(0));
-		
-		if (!operand.isInitialized()) {
-			//TODO: establish architecture for runtime errors
-			throw new IllegalStateException("Working with undefined variables");
+		ExecutionResult operand = execute(node.getChildren().get(0));
+		if (!operand.getSuccess()) {
+			return operand;
 		}
 		
-		int op1 = operand.getScalarValue();
+		int op1 = operand.getValue().getScalarValue();
 		
 		int out = 0;
 				
@@ -153,28 +161,37 @@ class ExpressionExecutor extends AbstractExecutor {
 			assert false;
 		}
 		
-		return ScalarMemoryEntry.initialized(out, node.getDataType());
+		return ExecutionResult.success(ScalarMemoryEntry.initialized(out, node.getDataType()));
 	}
 
-	private MemoryEntry executeVariable(ParseTreeNode node) {
+	private ExecutionResult executeVariable(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.VARIABLE;
 				
 		MemoryEntry varEntry = runtimeData.lookup(node.getIdentifier());
 		
 		if (varEntry.isArray()) {
 			for (ParseTreeNode subscriptNode : node.getChildren()) {
-				MemoryEntry subscriptEntry = execute(subscriptNode);
+				ExecutionResult subscriptEntry = execute(subscriptNode);
+				if (!subscriptEntry.getSuccess()) {
+					return subscriptEntry;
+				}
 				
-				assert subscriptEntry.getDataType().isCompatibleWith(IntegerType.getInstance());
+				assert subscriptEntry.getValue().getDataType().isCompatibleWith(IntegerType.getInstance());
 				
-				varEntry = varEntry.getArrayValue(subscriptEntry.getScalarValue());
+				int index = subscriptEntry.getValue().getScalarValue();
+				
+				if (!varEntry.isInBounds(index)) {
+					return ExecutionResult.failure("Array index out of bounds: " + index + " given for array of size " + varEntry.getSize());
+				}
+				
+				varEntry = varEntry.getArrayValue(index);
 			}
 		}
 		
 		if (!varEntry.isInitialized()) {
-			throw new IllegalStateException("Accessing uninitialized variable " + node.getIdentifier());
+			return ExecutionResult.failure("Accessing unitialized variable: " + node.getIdentifier());
 		}
 		
-		return varEntry;
+		return ExecutionResult.success(varEntry);
 	}
 }

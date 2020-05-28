@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import memory.MemoryEntry;
 import memory.RuntimeDataStack;
 import parser.tree.ParseTreeAttributeType;
 import parser.tree.ParseTreeNode;
@@ -25,59 +24,76 @@ public class CompoundExecutor extends AbstractExecutor {
 	}
 	
 	@Override
-	public MemoryEntry execute(ParseTreeNode node) {
+	public ExecutionResult execute(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.FUNCTION || node.getType() == ParseTreeNodeType.COMPOUND || node.getType() == ParseTreeNodeType.IF || node.getType() == ParseTreeNodeType.LOOP;
 
 		for (ParseTreeNode child : node.getChildren()) {
+			ExecutionResult result;
+			
 			switch (child.getType()) {
 			case DECLARATION:
-				executeDeclaration(child);
+				result = executeDeclaration(child);
 				break;
 			case ASSIGNMENT:
-				executeAssignment(child);
+				result = executeAssignment(child);
 				break;
 			case IF:
-				executeIf(child);
+				result = executeIf(child);
 				break;
 			case LOOP:
-				executeLoop(child);
+				result = executeLoop(child);
 				break;
 			case RETURN:
 				return ExpressionExecutor.of(runtimeData).execute(child.getChildren().get(0));
 			case EMPTY:
-				//do nothing
+				result = ExecutionResult.voidResult();
 				break;
 			case FUNCTION_CALL:
-				ExpressionExecutor.of(runtimeData).execute(child);
+				result = ExpressionExecutor.of(runtimeData).execute(child);
 				break;
 			case PRINT:
 				for (ParseTreeNode printNode : child.getChildren()) {
-					System.out.print(ExpressionExecutor.of(runtimeData).execute(printNode));
+					ExecutionResult valueResult = ExpressionExecutor.of(runtimeData).execute(printNode);
+					if (!valueResult.getSuccess()) {
+						return valueResult;
+					}
+					
+					System.out.print(valueResult.getValue());
 				}
 				System.out.println();
+				result = ExecutionResult.voidResult();
 				break;
 			default:
 				assert false;
-				return null;
+				result = null;
+			}
+			
+			if (result == null) {
+				System.out.println();
+			}
+			
+			//if this step failed, then bail out right here
+			if (!result.getSuccess()) {
+				return result;
 			}
 		}
 		
-		return null;
+		return ExecutionResult.voidResult();
 	}
 	
-	private void executeIf(ParseTreeNode node) {
+	private ExecutionResult executeIf(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.IF;
 		
-		IfExecutor.of(runtimeData).execute(node);
+		return IfExecutor.of(runtimeData).execute(node);
 	}
 	
-	private void executeLoop(ParseTreeNode node) {
+	private ExecutionResult executeLoop(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.LOOP;
 		
-		LoopExecutor.of(runtimeData).execute(node);
+		return LoopExecutor.of(runtimeData).execute(node);
 	}
 	
-	private void executeDeclaration(ParseTreeNode node) {
+	private ExecutionResult executeDeclaration(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.DECLARATION;
 		
 		SymbolTableEntry identifier = node.getAttribute(ParseTreeAttributeType.IDENTIFIER).getIdentifier();
@@ -86,20 +102,25 @@ public class CompoundExecutor extends AbstractExecutor {
 		if (identifier.getDataType().isArrayType()) {
 			List<Integer> subscripts = new LinkedList<>();
 			for (ParseTreeNode subscriptNode : node.getChildren()) {
-				MemoryEntry subscriptEntry = ExpressionExecutor.of(runtimeData).execute(subscriptNode);
+				ExecutionResult subscriptResult = ExpressionExecutor.of(runtimeData).execute(subscriptNode);
+				if (!subscriptResult.getSuccess()) {
+					return subscriptResult;
+				}
 				
-				assert subscriptEntry.getDataType().isCompatibleWith(IntegerType.getInstance());
+				assert subscriptResult.getValue().getDataType().isCompatibleWith(IntegerType.getInstance());
 				
-				subscripts.add(subscriptEntry.getScalarValue());
+				subscripts.add(subscriptResult.getValue().getScalarValue());
 			}
 			
 			runtimeData.add(identifier, identifier.getDataType(), subscripts);
 		} else {
 			runtimeData.add(identifier, node.getDataType());
 		}
+		
+		return ExecutionResult.voidResult();
 	}
 	
-	private void executeAssignment(ParseTreeNode node) {
+	private ExecutionResult executeAssignment(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.ASSIGNMENT;
 		assert node.getChildren().size() == 1;
 		
@@ -107,18 +128,27 @@ public class CompoundExecutor extends AbstractExecutor {
 		SymbolTableEntry identifier = varNode.getIdentifier();
 		assert identifier.getType() == SymbolTableEntryType.VARIABLE;
 		
-		MemoryEntry value = ExpressionExecutor.of(runtimeData).execute(node.getChildren().get(0));
+		ExecutionResult result = ExpressionExecutor.of(runtimeData).execute(node.getChildren().get(0));
+		if (!result.getSuccess()) {
+			return result;
+		}
 		
 		if (identifier.getDataType().isArrayType()) {
 			List<Integer> subscripts = new LinkedList<>();
 			for (ParseTreeNode subscriptNode : varNode.getChildren()) {
-				subscripts.add(ExpressionExecutor.of(runtimeData).execute(subscriptNode).getScalarValue());
+				ExecutionResult subscriptResult = ExpressionExecutor.of(runtimeData).execute(subscriptNode);
+				if (!subscriptResult.getSuccess()) {
+					return subscriptResult;
+				}
+				
+				subscripts.add(subscriptResult.getValue().getScalarValue());
 			}
 						
-			runtimeData.lookup(identifier).copy(subscripts, value);
+			runtimeData.lookup(identifier).copy(subscripts, result.getValue());
 		} else {
-			runtimeData.lookup(identifier).copy(value);
+			runtimeData.lookup(identifier).copy(result.getValue());
 		}
 		
+		return result;
 	}
 }

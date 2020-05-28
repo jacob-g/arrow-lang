@@ -86,4 +86,10 @@ public final class ScalarMemoryEntry implements MemoryEntry {
 	public String toString() {
 		return dataType.toString(this);
 	}
+
+	@Override
+	public boolean isInBounds(int index) {
+		assert false;
+		return false;
+	}
 }

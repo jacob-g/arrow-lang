@@ -2,7 +2,6 @@ package executor;
 
 import java.util.Objects;
 
-import memory.MemoryEntry;
 import memory.RuntimeDataStack;
 import parser.tree.ParseTreeAttributeType;
 import parser.tree.ParseTreeNode;
@@ -21,22 +20,28 @@ class IfExecutor extends AbstractExecutor {
 	}
 
 	@Override
-	public MemoryEntry execute(ParseTreeNode node) {
+	public ExecutionResult execute(ParseTreeNode node) {
 		assert node.getType() == ParseTreeNodeType.IF;
 		
 		ParseTreeNode testNode = node.getAttribute(ParseTreeAttributeType.TEST);
-		MemoryEntry testValue = ExpressionExecutor.of(runtimeData).execute(testNode);
+		ExecutionResult testResult = ExpressionExecutor.of(runtimeData).execute(testNode);
+		if (!testResult.getSuccess()) {
+			return testResult;
+		}
 		
-		assert BoolType.getInstance().isCompatibleWith(testValue.getDataType());
+		assert BoolType.getInstance().isCompatibleWith(testResult.getValue().getDataType());
 		
-		if (testValue.getScalarValue() == 0) {
+		if (testResult.getValue().getScalarValue() == 0) {
 			//if the condition is true, then run the body
 			runtimeData.push();
-			CompoundExecutor.of(runtimeData).execute(node);
+			ExecutionResult bodyResult = CompoundExecutor.of(runtimeData).execute(node);
+			if (!bodyResult.getSuccess()) {
+				return bodyResult;
+			}
 			runtimeData.pop();
 		}
 		
-		return null;
+		return ExecutionResult.voidResult();
 	}
 
 }

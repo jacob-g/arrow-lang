@@ -6,6 +6,7 @@ import arrow.lexer.ArrowLexer;
 import arrow.lexer.ArrowTokenType;
 import arrow.parser.ArrowProgramParser;
 import executor.CompoundExecutor;
+import executor.ExecutionResult;
 import lexer.TokenLexResult;
 import memory.RuntimeDataStack;
 import parser.ParseResult;
@@ -32,22 +33,19 @@ public class Runner {
 			return;
 		}
 		
-		TokenLexResult<ArrowTokenType> lexResult = ArrowLexer.parse(fileBuilder.toString());
-		System.out.println("Lexer result:");
-		System.out.println(lexResult);
+		TokenLexResult<ArrowTokenType> lexResult = ArrowLexer.parse(fileBuilder.toString());		
 		if (!lexResult.getSuccess()) {
+			System.out.println(lexResult);
 			return;
 		}
 		
-		System.out.println("Parser result:");
 		ParseResult<ArrowTokenType> parseResult = new ArrowProgramParser().parse(lexResult.getResults());
-		System.out.println(parseResult);
 		if (!parseResult.getSuccess()) {
+			System.out.println(parseResult);
 			return;
 		}
 		
-		System.out.println("Executor result:");
-		CompoundExecutor.of(new RuntimeDataStack()).execute(parseResult.getNode());
-		System.out.println("Execution completed");
+		ExecutionResult result = CompoundExecutor.of(new RuntimeDataStack()).execute(parseResult.getNode());
+		System.out.println(result);
 	}
 }
