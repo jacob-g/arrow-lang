@@ -36,17 +36,15 @@ function
 function
 /--> char[] concat(char[] first, char[] second)
 | char[] result[length first + length second]
+| int index
+| index = 0
 | /--< length first == 0
-| | int index
-| | index = 0
 | | /-->
 | | | result[index] = first[index]
 | | | index = index + 1
 | | \--< index < length first
 | \-->
 | /--< length second == 0
-| | int index
-| | index = 0
 | | /-->
 | | | result[length first + index] = second[index]
 | | | index = index + 1
